@@ -38,7 +38,7 @@ function CryptoCard({ coin, rank }) {
       </div>
       <div className="text-right shrink-0">
         <p className="text-sm font-semibold text-gray-900 tabular-nums">
-          ${coin.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          ₵{coin.price.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </p>
         <p className={`text-xs font-semibold ${isUp ? 'text-green-600' : 'text-red-500'}`}>
           {isUp ? '▲' : '▼'} {Math.abs(coin.change24h).toFixed(2)}%

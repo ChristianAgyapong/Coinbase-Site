@@ -1,22 +1,23 @@
 ﻿import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { cryptoData } from '../data/cryptoData';
+import { cryptoData as staticCryptoData } from '../data/cryptoData';
 import { useAuth } from '../context/AuthContext';
+import { useLivePrices } from '../context/LivePricesContext';
 
 // ── Static portfolio data ─────────────────────────────────────
 const PORTFOLIO_ASSETS = [
-  { name: 'Crypto',       initial: '₿', color: '#D97706', bg: '#FEF3C7', value: 14186.12, change: null   },
-  { name: 'Stocks',       initial: 'S', color: '#2563EB', bg: '#DBEAFE', value: 8133.98,  change: null   },
-  { name: 'Derivatives',  initial: 'D', color: '#7C3AED', bg: '#EDE9FE', value: 148.84,   change: 148.84 },
-  { name: 'Predictions',  initial: 'P', color: '#059669', bg: '#D1FAE5', value: 42.69,    change: 42.69  },
-  { name: 'Cash',         initial: '$', color: '#0891B2', bg: '#CFFAFE', value: 10124.22, change: null   },
+  { name: 'Crypto',       initial: '₿', color: '#D97706', bg: '#FEF3C7', value: 224140.70, change: null   },
+  { name: 'Stocks',       initial: 'S', color: '#2563EB', bg: '#DBEAFE', value: 128516.88, change: null   },
+  { name: 'Derivatives',  initial: 'D', color: '#7C3AED', bg: '#EDE9FE', value: 2351.67,   change: 2351.67 },
+  { name: 'Predictions',  initial: 'P', color: '#059669', bg: '#D1FAE5', value: 674.50,    change: 674.50  },
+  { name: 'Cash',         initial: '₵', color: '#0891B2', bg: '#CFFAFE', value: 159962.68, change: null   },
 ];
 
 const RECENT_TXS = [
-  { type: 'Buy',  coin: 'Bitcoin',  symbol: 'BTC', amount: '0.0124 BTC', value: 841.28,   date: 'Today, 9:42 AM' },
-  { type: 'Sell', coin: 'Ethereum', symbol: 'ETH', amount: '0.5 ETH',    value: 1771.09,  date: 'Yesterday'      },
-  { type: 'Buy',  coin: 'Solana',   symbol: 'SOL', amount: '4.2 SOL',    value: 749.43,   date: 'Mar 5'          },
-  { type: 'Buy',  coin: 'Cardano',  symbol: 'ADA', amount: '1,200 ADA',  value: 816.00,   date: 'Mar 3'          },
+  { type: 'Buy',  coin: 'Bitcoin',  symbol: 'BTC', amount: '0.0124 BTC', value: 13292.22,  date: 'Today, 9:42 AM' },
+  { type: 'Sell', coin: 'Ethereum', symbol: 'ETH', amount: '0.5 ETH',    value: 27983.22,  date: 'Yesterday'      },
+  { type: 'Buy',  coin: 'Solana',   symbol: 'SOL', amount: '4.2 SOL',    value: 11840.99,  date: 'Mar 5'          },
+  { type: 'Buy',  coin: 'Cardano',  symbol: 'ADA', amount: '1,200 ADA',  value: 12892.80,  date: 'Mar 3'          },
 ];
 
 const PERIODS = ['1H', '1D', '1W', '1M', '1Y', 'All'];
@@ -54,17 +55,19 @@ function Reveal({ children, className = 'reveal-fade-up', delay = 0, style = {} 
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const liveData = useLivePrices() ?? staticCryptoData;
   const [activePeriod, setActivePeriod] = useState('1D');
   const [activeTab, setActiveTab] = useState('buy');
   const [selectedCoin, setSelectedCoin] = useState('bitcoin');
   const [buyAmount, setBuyAmount] = useState('');
 
-  const selectedCoinData = cryptoData.find(c => c.id === selectedCoin);
+  const selectedCoinData = liveData.find(c => c.id === selectedCoin);
   const estimatedReceive = buyAmount && selectedCoinData
     ? (parseFloat(buyAmount) / selectedCoinData.price).toFixed(6)
     : null;
 
   const displayName = user?.email?.split('@')[0] ?? 'there';
+  const todayStr = new Intl.DateTimeFormat('en-GH', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
 
   return (
     <div style={{ background: '#F3F4F6', minHeight: 'calc(100vh - 65px)' }}>
@@ -77,7 +80,7 @@ export default function Dashboard() {
               Good morning, <span style={{ color: '#1652F0' }}>{displayName}</span> 👋
             </h1>
             <p style={{ color: '#6B7280', fontSize: '0.875rem', margin: '3px 0 0', fontWeight: '500' }}>
-              March 8, 2026 · Your portfolio at a glance
+              {todayStr} · Your portfolio at a glance
             </p>
           </div>
           <Link to="/explore" style={{ padding: '7px 16px', background: '#F3F4F6', color: '#6B7280', borderRadius: '8px', fontWeight: '600', fontSize: '0.8125rem', textDecoration: 'none', border: '1px solid #E5E7EB' }}>
@@ -100,8 +103,8 @@ export default function Dashboard() {
               <div style={{ padding: '26px 28px 0' }}>
                 <p style={{ color: '#9CA3AF', fontSize: '0.75rem', fontWeight: '700', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Portfolio Value</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 'clamp(1.75rem,4vw,2.25rem)', fontWeight: '800', color: '#111827', letterSpacing: '-0.03em' }}>$33,683.80</span>
-                  <span style={{ color: '#22C55E', fontWeight: '700', fontSize: '0.9375rem' }}>▲ $131.36 (1.38%) today</span>
+                  <span style={{ fontSize: 'clamp(1.75rem,4vw,2.25rem)', fontWeight: '800', color: '#111827', letterSpacing: '-0.03em' }}>₵532,203.64</span>
+                  <span style={{ color: '#22C55E', fontWeight: '700', fontSize: '0.9375rem' }}>▲ ₵2,075.49 (1.38%) today</span>
                 </div>
                 {/* Period selector */}
                 <div style={{ display: 'flex', gap: '3px', marginTop: '20px', marginBottom: '4px' }}>
@@ -142,12 +145,13 @@ export default function Dashboard() {
                       <span style={{ fontWeight: '600', color: '#374151', fontSize: '0.9375rem' }}>{a.name}</span>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      {a.change !== null ? (
-                        <span style={{ color: '#22C55E', fontWeight: '700', fontSize: '0.9375rem' }}>↑ ${a.change.toFixed(2)}</span>
-                      ) : (
-                        <span style={{ color: '#111827', fontWeight: '700', fontSize: '0.9375rem' }}>
-                          ${a.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </span>
+                      <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.9375rem', fontVariantNumeric: 'tabular-nums' }}>
+                        ₵{a.value.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                      {a.change !== null && (
+                        <p style={{ margin: '2px 0 0', color: '#22C55E', fontWeight: '700', fontSize: '0.75rem' }}>
+                          ↑ ₵{a.change.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -178,7 +182,7 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {cryptoData.map((coin, i) => (
+                  {liveData.map((coin, i) => (
                     <tr
                       key={coin.id}
                       onClick={() => navigate(`/asset/${coin.id}`)}
@@ -198,13 +202,13 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td style={{ textAlign: 'right', padding: '12px 10px', fontWeight: '700', color: '#111827', fontSize: '0.875rem', fontVariantNumeric: 'tabular-nums' }}>
-                        ${coin.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        ₵{coin.price.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                       <td style={{ textAlign: 'right', padding: '12px 10px', fontWeight: '700', fontSize: '0.875rem', color: coin.change24h >= 0 ? '#22C55E' : '#EF4444' }}>
                         {coin.change24h >= 0 ? '▲' : '▼'} {Math.abs(coin.change24h).toFixed(2)}%
                       </td>
                       <td style={{ textAlign: 'right', padding: '12px 10px', color: '#6B7280', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
-                        ${(coin.marketCap / 1e9).toFixed(1)}B
+                        ₵{(coin.marketCap / 1e9).toFixed(1)}B
                       </td>
                     </tr>
                   ))}
@@ -245,15 +249,15 @@ export default function Dashboard() {
                 onFocus={e => { e.target.style.borderColor = '#1652F0'; }}
                 onBlur={e => { e.target.style.borderColor = '#E5E7EB'; }}
               >
-                {cryptoData.map(c => (
+                {liveData.map(c => (
                   <option key={c.id} value={c.id}>{c.name} ({c.symbol})</option>
                 ))}
               </select>
 
               {/* Amount */}
-              <label style={{ display: 'block', color: '#374151', fontWeight: '600', fontSize: '0.8125rem', marginBottom: '6px' }}>Amount (USD)</label>
+              <label style={{ display: 'block', color: '#374151', fontWeight: '600', fontSize: '0.8125rem', marginBottom: '6px' }}>Amount (GHS)</label>
               <div style={{ position: 'relative', marginBottom: '14px' }}>
-                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', fontWeight: '700', fontSize: '1rem', pointerEvents: 'none' }}>$</span>
+                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', fontWeight: '700', fontSize: '1rem', pointerEvents: 'none' }}>₵</span>
                 <input
                   type="number"
                   min="0"
@@ -284,7 +288,7 @@ export default function Dashboard() {
 
               {selectedCoinData && (
                 <p style={{ textAlign: 'center', fontSize: '0.8125rem', color: '#9CA3AF', margin: '10px 0 0', fontWeight: '600' }}>
-                  1 {selectedCoinData.symbol} = ${selectedCoinData.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  1 {selectedCoinData.symbol} = ₵{selectedCoinData.price.toLocaleString('en-GH', { minimumFractionDigits: 2 })}
                 </p>
               )}
             </div>
@@ -310,7 +314,7 @@ export default function Dashboard() {
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.875rem' }}>
-                      ${tx.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      ₵{tx.value.toLocaleString('en-GH', { minimumFractionDigits: 2 })}
                     </p>
                     <p style={{ margin: 0, color: '#9CA3AF', fontSize: '0.75rem' }}>{tx.amount}</p>
                   </div>

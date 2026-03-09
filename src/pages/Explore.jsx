@@ -37,13 +37,13 @@ const coinColors = {
 const MARKET_STATS = [
   {
     label: 'Total market cap',
-    value: '$2.41T',
+    value: '₵38.08T',
     change: -0.93,
     path: 'M0,52 C18,50 36,53 56,56 C76,59 96,57 116,60 C136,63 156,61 176,65 C196,69 216,67 236,72 C256,77 272,80 290,85',
   },
   {
     label: 'Trade volume',
-    value: '$104.0B',
+    value: '₵1,643.2B',
     change: -45.84,
     path: 'M0,18 C18,20 36,22 56,26 C76,30 96,34 116,41 C136,49 156,55 176,62 C196,70 216,74 246,80 C266,84 278,87 290,90',
   },
@@ -124,12 +124,12 @@ function Explore() {
     c.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+  const fmt = (n) => '₵' + new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 
   const fmtMC = (mc) => {
-    if (mc >= 1e12) return `$${(mc / 1e12).toFixed(2)}T`;
-    if (mc >= 1e9)  return `$${(mc / 1e9).toFixed(2)}B`;
-    return `$${(mc / 1e6).toFixed(2)}M`;
+    if (mc >= 1e12) return `₵${(mc / 1e12).toFixed(2)}T`;
+    if (mc >= 1e9)  return `₵${(mc / 1e9).toFixed(2)}B`;
+    return `₵${(mc / 1e6).toFixed(2)}M`;
   };
 
   return (
@@ -194,7 +194,7 @@ function Explore() {
                 />
               </div>
               <p style={{ fontSize: '0.875rem', color: '#4B5563', lineHeight: '1.65', margin: '0 0 4px' }}>
-                The overall crypto market is growing this week. As of today, the total crypto market capitalization is $2.41 trillion, representing a 0.48% increase from last week.
+                The overall crypto market is growing this week. As of today, the total crypto market capitalization is ₵38.08 trillion, representing a 0.48% increase from last week.
               </p>
               <a href="#" style={{ fontSize: '0.875rem', color: '#1652F0', fontWeight: '600', textDecoration: 'none' }}>Read more</a>
 

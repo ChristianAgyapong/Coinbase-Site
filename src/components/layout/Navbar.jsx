@@ -8,7 +8,7 @@ function CryptoTicker() {
   const liveData = useLivePrices() ?? [];
   const items = [...liveData, ...liveData];
   return (
-    <div className="ticker-wrap" style={{ background: '#0A0B0D', borderBottom: '1px solid #1C1C1E', padding: '6px 0' }}>
+    <div className="ticker-wrap" style={{ background: 'linear-gradient(145deg, #1652F0, #0A3ECF)', borderBottom: '1px solid rgba(255,255,255,0.15)', padding: '6px 0' }}>
       <div className="ticker-inner">
         {items.map((coin, i) => {
           const isUp = coin.change24h >= 0;
@@ -16,7 +16,7 @@ function CryptoTicker() {
             <span key={i} style={{ padding: '0 22px', display: 'inline-flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap', fontSize: '0.75rem', fontWeight: '600' }}>
               <span style={{ color: '#9CA3AF', letterSpacing: '0.05em' }}>{coin.symbol}</span>
               <span style={{ color: '#F3F4F6', fontVariantNumeric: 'tabular-nums' }}>
-                ${coin.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ₵{coin.price.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <span style={{ color: isUp ? '#22C55E' : '#EF4444' }}>
                 {isUp ? '▲' : '▼'} {Math.abs(coin.change24h).toFixed(2)}%

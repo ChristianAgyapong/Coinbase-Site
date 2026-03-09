@@ -2,6 +2,23 @@
 import { Link } from 'react-router-dom';
 import { cryptoData } from '../data/cryptoData';
 
+function useReveal(options = {}) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { el.classList.add('is-visible'); obs.unobserve(el); }
+      },
+      { threshold: 0.12, ...options }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
 /* Convenience wrapper component */
 function Reveal({ children, variant = 'reveal-fade-up', delay = '', className = '', style = {} }) {
   const ref = useReveal();
@@ -57,7 +74,7 @@ const FEATURES = [
   {
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
     title: 'Institutional Security',
-    desc:  'Cold storage, 2FA, and FDIC-insured USD balances keep your assets protected around the clock.',
+    desc:  'Cold storage, 2FA, and FDIC-insured GHS balances keep your assets protected around the clock.',
   },
   {
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
@@ -71,21 +88,21 @@ const FEATURES = [
   },
 ];
 
-const BIDS = [['43,210','1.24','53,012.40'],['43,190','0.85','36,711.50'],['43,170','2.10','90,657.00'],['43,155','0.62','26,756.10'],['43,140','1.45','62,553.00']];
-const ASKS = [['43,230','0.92','39,771.60'],['43,250','1.55','67,037.50'],['43,270','0.44','19,038.80'],['43,285','0.78','33,762.30'],['43,300','1.20','51,960.00']];
+const BIDS = [['682,718','1.24','846,970.32'],['682,402','0.85','580,041.70'],['682,086','2.10','1,432,380.60'],['681,849','0.62','422,746.38'],['681,612','1.45','988,337.40']];
+const ASKS = [['683,034','0.92','628,391.28'],['683,350','1.55','1,059,192.50'],['683,666','0.44','300,812.84'],['683,903','0.78','533,444.34'],['684,140','1.20','820,968.00']];
 
 const TIMEFRAMES  = ['1H','1D','1W','1M','1Y'];
 const ORDER_TYPES = ['Market','Limit','Stop-Limit'];
 
 const TICKER_ITEMS = [
-  { sym: 'BTC', price: '$43,218', chg: '+2.45%', pos: true },
-  { sym: 'ETH', price: '$3,542',  chg: '+3.67%', pos: true },
-  { sym: 'SOL', price: '$178.42', chg: '+5.23%', pos: true },
-  { sym: 'BNB', price: '$612.85', chg: '+1.89%', pos: true },
-  { sym: 'ADA', price: '$0.68',   chg: '-1.23%', pos: false },
-  { sym: 'XRP', price: '$0.52',   chg: '+1.45%', pos: true },
-  { sym: 'DOGE',price: '$0.15',   chg: '-2.34%', pos: false },
-  { sym: 'DOT', price: '$7.28',   chg: '+3.12%', pos: true },
+  { sym: 'BTC', price: '₵682,844', chg: '+2.45%', pos: true },
+  { sym: 'ETH', price: '₵55,964',  chg: '+3.67%', pos: true },
+  { sym: 'SOL', price: '₵2,819',   chg: '+5.23%', pos: true },
+  { sym: 'BNB', price: '₵9,683',   chg: '+1.89%', pos: true },
+  { sym: 'ADA', price: '₵10.74',   chg: '-1.23%', pos: false },
+  { sym: 'XRP', price: '₵8.22',    chg: '+1.45%', pos: true },
+  { sym: 'DOGE',price: '₵2.37',    chg: '-2.34%', pos: false },
+  { sym: 'DOT', price: '₵115.02',  chg: '+3.12%', pos: true },
 ];
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -128,7 +145,7 @@ function HeroChart({ activeTime, setActiveTime }) {
           <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: '#fff', fontSize: '10px', fontWeight: '900' }}>BT</span>
           </div>
-          <span style={{ color: '#E5E7EB', fontSize: '13px', fontWeight: '700' }}>BTC-USD</span>
+          <span style={{ color: '#E5E7EB', fontSize: '13px', fontWeight: '700' }}>BTC-GHS</span>
           <span style={{ color: '#22C55E', fontSize: '12px', fontWeight: '600' }}>+2.4%</span>
         </div>
         <div style={{ display: 'flex', gap: '4px' }}>
@@ -149,8 +166,8 @@ function HeroChart({ activeTime, setActiveTime }) {
       </div>
 
       <div style={{ padding: '10px 20px 0' }}>
-        <p style={{ color: '#fff', fontSize: '24px', fontWeight: '800', margin: 0, letterSpacing: '-0.02em' }}>$43,218.50</p>
-        <p style={{ color: '#22C55E', fontSize: '12px', margin: '2px 0 8px', fontWeight: '600' }}>â–² $1,032.10 (+2.45%)</p>
+        <p style={{ color: '#fff', fontSize: '24px', fontWeight: '800', margin: 0, letterSpacing: '-0.02em' }}>₵682,852.30</p>
+        <p style={{ color: '#22C55E', fontSize: '12px', margin: '2px 0 8px', fontWeight: '600' }}>▲ ₵16,307.18 (+2.45%)</p>
       </div>
 
       <svg viewBox="0 0 380 140" width="100%" height="140" preserveAspectRatio="none" style={{ display: 'block' }}>
@@ -198,10 +215,10 @@ function AdvancedTrading() {
   const [amount,     setAmount]     = useState('');
   const [obTab,      setObTab]      = useState('both');
 
-  const fmt    = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+  const fmt    = (n) => '₵' + new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
   const fmtPct = (n) => `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`;
 
-  const estimatedReceive = amount ? (parseFloat(amount) / 43218.5).toFixed(6) : '0';
+  const estimatedReceive = amount ? (parseFloat(amount) / 682852.3).toFixed(6) : '0';
   const fee              = amount ? (parseFloat(amount) * 0.006).toFixed(2)   : '0.00';
   const total            = amount ? (parseFloat(amount) * 1.006).toFixed(2)   : '0.00';
 
@@ -305,7 +322,7 @@ function AdvancedTrading() {
                 </div>
                 <div style={{ padding: '16px 20px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '10px' }}>
-                    {['Price (USD)','Amount (BTC)','Total'].map(h => (
+                    {['Price (GHS)','Amount (BTC)','Total'].map(h => (
                       <span key={h} style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: '600' }}>{h}</span>
                     ))}
                   </div>
@@ -319,7 +336,7 @@ function AdvancedTrading() {
                   {obTab === 'both' && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderTop: '1px solid #F3F4F6', borderBottom: '1px solid #F3F4F6', margin: '4px 0' }}>
                       <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Spread</span>
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#374151' }}>$12.00 (0.028%)</span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#374151' }}>₵189.60 (0.028%)</span>
                     </div>
                   )}
                   {obTab !== 'asks' && BIDS.map(([p, s, tot]) => (
@@ -368,9 +385,9 @@ function AdvancedTrading() {
                     ))}
                   </div>
 
-                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '6px' }}>Amount (USD)</label>
+                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '6px' }}>Amount (GHS)</label>
                   <div style={{ position: 'relative', marginBottom: '14px' }}>
-                    <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', fontWeight: '700' }}>$</span>
+                    <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', fontWeight: '700' }}>₵</span>
                     <input
                       type="number"
                       value={amount}
@@ -388,7 +405,7 @@ function AdvancedTrading() {
                   </div>
 
                   <div style={{ background: '#F9FAFB', borderRadius: '10px', padding: '12px 14px', marginBottom: '16px' }}>
-                    {[['You receive', `${estimatedReceive} BTC`], ['Coinbase fee', `$${fee}`], ['Total', `$${total}`]].map(([k, v]) => (
+                    {[['You receive', `${estimatedReceive} BTC`], ['Coinbase fee', `₵${fee}`], ['Total', `₵${total}`]].map(([k, v]) => (
                       <div key={k} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                         <span style={{ fontSize: '12px', color: '#9CA3AF' }}>{k}</span>
                         <span style={{ fontSize: '12px', fontWeight: '700', color: '#111827' }}>{v}</span>
@@ -506,7 +523,7 @@ function AdvancedTrading() {
                         <span style={{ fontSize: '13px', fontWeight: '600', color: isPos ? '#16A34A' : '#DC2626', fontVariantNumeric: 'tabular-nums' }}>{fmtPct(coin.change24h)}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <span style={{ fontSize: '13px', color: '#374151', fontVariantNumeric: 'tabular-nums' }}>${(coin.marketCap / 1e9).toFixed(1)}B</span>
+                        <span style={{ fontSize: '13px', color: '#374151', fontVariantNumeric: 'tabular-nums' }}>₵{(coin.marketCap / 1e9).toFixed(1)}B</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                         <span style={{ fontSize: '12px', fontWeight: '700', color: '#7C3AED', background: '#F5F3FF', padding: '6px 14px', borderRadius: '99px', transition: 'background 0.2s, color 0.2s' }}>Trade</span>
@@ -525,7 +542,7 @@ function AdvancedTrading() {
         <div style={{ maxWidth: '1160px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', textAlign: 'center' }} className="stats-grid">
             {[
-              { value: '$150B+', label: 'Trading volume per quarter' },
+              { value: '₵2.37T+', label: 'Trading volume per quarter' },
               { value: '200+',   label: 'Tradable assets' },
               { value: '0.5%',   label: 'Average spread' },
             ].map(({ value, label }, i) => {

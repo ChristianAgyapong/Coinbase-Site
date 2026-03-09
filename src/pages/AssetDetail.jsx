@@ -71,7 +71,7 @@ function AssetDetail() {
     );
   }
 
-  const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+  const fmt = (n) => '₵' + new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
   const isPositive = crypto.change24h >= 0;
   const iconColor  = coinColors[crypto.id] || '#6B7280';
 
@@ -147,8 +147,8 @@ function AssetDetail() {
               {/* Stats row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }} className="asset-stats-grid">
                 {[
-                  { label: 'Market Cap',   value: `$${(crypto.marketCap / 1e9).toFixed(2)}B` },
-                  { label: '24h Volume',   value: `$${(crypto.volume24h / 1e9).toFixed(2)}B` },
+                  { label: 'Market Cap',   value: `₵${(crypto.marketCap / 1e9).toFixed(2)}B` },
+                  { label: '24h Volume',   value: `₵${(crypto.volume24h / 1e9).toFixed(2)}B` },
                   { label: '24h High',     value: fmt(crypto.price * 1.018) },
                   { label: '24h Low',      value: fmt(crypto.price * 0.978) },
                 ].map(({ label, value }) => (
@@ -202,10 +202,10 @@ function AssetDetail() {
               {/* Spend input */}
               <div style={{ marginBottom: '12px' }}>
                 <label style={{ fontSize: '0.75rem', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '6px' }}>
-                  {tradeTab === 'buy' ? 'Spend (USD)' : 'Sell Amount (USD)'}
+                  {tradeTab === 'buy' ? 'Spend (GHS)' : 'Sell Amount (GHS)'}
                 </label>
                 <div style={{ display: 'flex', alignItems: 'center', border: `1.5px solid ${focused ? '#7C3AED' : '#E5E7EB'}`, borderRadius: '10px', overflow: 'hidden', transition: 'border-color 0.15s' }}>
-                  <span style={{ padding: '0 12px', color: '#9CA3AF', fontSize: '1rem', fontWeight: '600', flexShrink: 0 }}>$</span>
+                  <span style={{ padding: '0 12px', color: '#9CA3AF', fontSize: '1rem', fontWeight: '600', flexShrink: 0 }}>₵</span>
                   <input
                     type="number"
                     min="0"
@@ -217,8 +217,8 @@ function AssetDetail() {
                     style={{ flex: 1, border: 'none', outline: 'none', padding: '13px 12px 13px 0', fontSize: '1rem', fontWeight: '600', color: '#111827', background: 'transparent' }}
                   />
                   <div style={{ display: 'flex', gap: '4px', padding: '0 10px', flexShrink: 0 }}>
-                    {['$25','$100','$500'].map(amt => (
-                      <button key={amt} onClick={() => setSpendAmount(amt.replace('$',''))}
+                    {['₵395','₵1580','₵7900'].map(amt => (
+                      <button key={amt} onClick={() => setSpendAmount(amt.replace('₵',''))}
                         style={{ padding: '4px 7px', fontSize: '0.7rem', fontWeight: '700', borderRadius: '6px', border: '1px solid #E5E7EB', background: '#F9FAFB', color: '#374151', cursor: 'pointer' }}>
                         {amt}
                       </button>
@@ -230,12 +230,12 @@ function AssetDetail() {
               {/* Receive display */}
               <div style={{ background: '#F9FAFB', border: '1px solid #F3F4F6', borderRadius: '10px', padding: '12px 14px', marginBottom: '16px' }}>
                 <p style={{ fontSize: '0.75rem', fontWeight: '600', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.04em', margin: '0 0 4px' }}>
-                  {tradeTab === 'buy' ? `Receive (${crypto.symbol})` : 'Receive (USD)'}
+                  {tradeTab === 'buy' ? `Receive (${crypto.symbol})` : 'Receive (GHS)'}
                 </p>
                 <p style={{ fontSize: '1.125rem', fontWeight: '700', color: '#111827', margin: 0 }}>
                   {tradeTab === 'buy'
                     ? `${receive} ${crypto.symbol}`
-                    : `$${spend > 0 ? (spend - spend * 0.006).toFixed(2) : '0.00'}`}
+                    : `₵${spend > 0 ? (spend - spend * 0.006).toFixed(2) : '0.00'}`}
                 </p>
               </div>
 
@@ -243,8 +243,8 @@ function AssetDetail() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px', padding: '12px 14px', background: '#FAFAFA', borderRadius: '10px', border: '1px solid #F3F4F6' }}>
                 {[
                   { label: `${crypto.symbol} price`, value: fmt(crypto.price) },
-                  { label: 'Coinbase fee (0.6%)', value: `$${fee}` },
-                  { label: 'Total', value: `$${total}`, bold: true },
+                  { label: 'Coinbase fee (0.6%)', value: `₵${fee}` },
+                  { label: 'Total', value: `₵${total}`, bold: true },
                 ].map(({ label, value, bold }) => (
                   <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.8125rem', color: '#6B7280', fontWeight: bold ? '700' : '500' }}>{label}</span>

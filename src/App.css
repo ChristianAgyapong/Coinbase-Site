@@ -291,3 +291,112 @@ html {
   scrollbar-width: thin;
   scrollbar-color: #D1D5DB transparent;
 }
+
+/* ─────────────────────────────────────────
+   Home page — mobile / phone polish
+───────────────────────────────────────── */
+
+/* Tablet (≤ 768px) — already covered above for grids.
+   These rules add Home-page-specific refinements. */
+@media (max-width: 768px) {
+  /* Explore dark panel: tighter padding */
+  .home-explore-panel {
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Crypto panel tabs: keep all 3 on one line */
+  .home-explore-tabs button {
+    font-size: 10.5px !important;
+    padding: 7px 3px !important;
+  }
+
+  /* Hero section: remove excessive top/bottom whitespace */
+  .home-page section:first-child {
+    padding-top: 36px !important;
+    padding-bottom: 36px !important;
+  }
+
+  /* Explore section: reduce vertical padding */
+  .home-page section:nth-child(2) {
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
+  }
+}
+
+/* Small phones (≤ 480px) */
+@media (max-width: 480px) {
+  /* Hide the elaborate phone mockup to save vertical space.
+     The hero text + CTA is more important on a small screen. */
+  .home-hero-mockup {
+    display: none !important;
+  }
+
+  /* Make hero single-column even tighter */
+  .home-page .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  /* Ensure text column fills width */
+  .home-page .hero-grid > div:last-child {
+    order: 1 !important;
+    text-align: left;
+  }
+
+  /* Explore dark panel: very compact on phones */
+  .home-explore-panel {
+    padding: 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .home-explore-tabs button {
+    font-size: 10px !important;
+    padding: 6px 2px !important;
+  }
+
+  /* Coin rows inside the panel: tighter */
+  .home-explore-panel a {
+    padding: 8px 4px !important;
+  }
+
+  /* Section padding: tighter on very small phones */
+  .home-page section {
+    padding-top: 36px !important;
+    padding-bottom: 36px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Section inner containers: full width with 16px side padding */
+  .home-page section > div {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Stats band: stack to 1 col */
+  .home-page section .stats-band {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* CTA banner: tighter padding */
+  .home-page section > div[style*='background: #1652F0'],
+  .home-page section > div[style*='background:#1652F0'] {
+    padding: 36px 20px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* Extra small (≤ 380px) — old/budget phones */
+@media (max-width: 380px) {
+  .home-explore-tabs button {
+    font-size: 9px !important;
+    padding: 6px 1px !important;
+  }
+
+  .home-page section {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}

@@ -78,12 +78,12 @@ const TIPS_SMALL = [
 ];
 
 const EARN_LESSONS = [
-  { id: 'el-1', tag: "BEGINNER'S GUIDE", img: 'ethereum',    title: 'What is Ethereum?',          reward: '$5 ETH',  duration: '8 min',  level: 'Beginner' },
-  { id: 'el-2', tag: "BEGINNER'S GUIDE", img: 'blockchain',  title: 'What is a blockchain?',       reward: '$3 BTC',  duration: '8 min',  level: 'Beginner' },
-  { id: 'el-3', tag: 'DEFI',             img: 'defi',        title: 'Intro to DeFi',               reward: '$5 USDC', duration: '12 min', level: 'Intermediate' },
-  { id: 'el-4', tag: "BEGINNER'S GUIDE", img: 'bitcoin',     title: 'What is Bitcoin?',            reward: '$5 BTC',  duration: '10 min', level: 'Beginner' },
-  { id: 'el-5', tag: 'GETTING STARTED',  img: 'earnRewards', title: 'How to earn crypto rewards',  reward: '$3 USDC', duration: '7 min',  level: 'Beginner' },
-  { id: 'el-6', tag: "BEGINNER'S GUIDE", img: 'stablecoin',  title: 'What are stablecoins?',       reward: '$3 USDC', duration: '7 min',  level: 'Beginner' },
+  { id: 'el-1', tag: "BEGINNER'S GUIDE", img: 'ethereum',    title: 'What is Ethereum?',          reward: '₵79 ETH',  duration: '8 min',  level: 'Beginner' },
+  { id: 'el-2', tag: "BEGINNER'S GUIDE", img: 'blockchain',  title: 'What is a blockchain?',       reward: '₵47 BTC',  duration: '8 min',  level: 'Beginner' },
+  { id: 'el-3', tag: 'DEFI',             img: 'defi',        title: 'Intro to DeFi',               reward: '₵79 USDC', duration: '12 min', level: 'Intermediate' },
+  { id: 'el-4', tag: "BEGINNER'S GUIDE", img: 'bitcoin',     title: 'What is Bitcoin?',            reward: '₵79 BTC',  duration: '10 min', level: 'Beginner' },
+  { id: 'el-5', tag: 'GETTING STARTED',  img: 'earnRewards', title: 'How to earn crypto rewards',  reward: '₵47 USDC', duration: '7 min',  level: 'Beginner' },
+  { id: 'el-6', tag: "BEGINNER'S GUIDE", img: 'stablecoin',  title: 'What are stablecoins?',       reward: '₵47 USDC', duration: '7 min',  level: 'Beginner' },
 ];
 
 /*  Responsive width hook  */
@@ -674,7 +674,7 @@ function Learn() {
             </h2>
           </div>
           <p style={{ color: '#6B7280', fontSize: '0.9375rem', marginBottom: '28px', lineHeight: 1.6 }}>
-            Watch short videos, answer a few questions, and earn real crypto rewards  up to $100.
+            Watch short videos, answer a few questions, and earn real crypto rewards  up to ₵1,580.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2,1fr)' : 'repeat(3,1fr)', gap: isMobile ? '16px' : '20px' }}>
             {EARN_LESSONS.map((lesson, idx) => (
