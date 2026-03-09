@@ -1,4 +1,4 @@
-﻿import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useLivePrices } from '../../context/LivePricesContext';
 import { useAuth } from '../../context/AuthContext';
@@ -8,20 +8,20 @@ function CryptoTicker() {
   const liveData = useLivePrices() ?? [];
   const items = [...liveData, ...liveData];
   return (
-    <div className="ticker-wrap" style={{ background: 'linear-gradient(145deg, #1652F0, #0A3ECF)', borderBottom: '1px solid rgba(255,255,255,0.15)', padding: '6px 0' }}>
+    <div className="ticker-wrap" style={{ background: '#EEEAF8', borderBottom: '1px solid #D8D0F0', padding: '6px 0' }}>
       <div className="ticker-inner">
         {items.map((coin, i) => {
           const isUp = coin.change24h >= 0;
           return (
             <span key={i} style={{ padding: '0 22px', display: 'inline-flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap', fontSize: '0.75rem', fontWeight: '600' }}>
-              <span style={{ color: '#9CA3AF', letterSpacing: '0.05em' }}>{coin.symbol}</span>
-              <span style={{ color: '#F3F4F6', fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ color: '#7C3AED', letterSpacing: '0.05em' }}>{coin.symbol}</span>
+              <span style={{ color: '#1C1C2E', fontVariantNumeric: 'tabular-nums' }}>
                 ₵{coin.price.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
-              <span style={{ color: isUp ? '#22C55E' : '#EF4444' }}>
+              <span style={{ color: isUp ? '#16A34A' : '#DC2626', fontWeight: '700' }}>
                 {isUp ? '▲' : '▼'} {Math.abs(coin.change24h).toFixed(2)}%
               </span>
-              <span style={{ color: '#2D2F35' }}>|</span>
+              <span style={{ color: '#C4B8E8' }}>|</span>
             </span>
           );
         })}
