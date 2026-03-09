@@ -322,6 +322,22 @@ html {
     padding-top: 48px !important;
     padding-bottom: 48px !important;
   }
+
+  /* Advanced Trader section: improve layout on tablet */
+  .home-page section:nth-child(3) .hero-grid > div:first-child {
+    max-height: 250px;
+  }
+
+  /* Make buttons more tablet-friendly */
+  .home-page a[style*='display: inline-block'] {
+    padding: 13px 28px;
+    width: auto;
+  }
+
+  /* Coinbase One section sizing */
+  .home-page section:nth-child(4) > div > div:last-child {
+    max-width: 100% !important;
+  }
 }
 
 /* Small phones (≤ 480px) */
@@ -342,6 +358,56 @@ html {
   .home-page .hero-grid > div:last-child {
     order: 1 !important;
     text-align: left;
+  }
+
+  /* Advanced Trader section: stack chart above text */
+  .home-page section:nth-child(3) .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+
+  .home-page section:nth-child(3) .hero-grid > div:first-child {
+    order: 2;
+    max-width: 100% !important;
+  }
+
+  .home-page section:nth-child(3) .hero-grid > div:last-child {
+    order: 1;
+  }
+
+  /* Make Start Trading button full-width on mobile */
+  .home-page section:nth-child(3) a[style*='display: inline-block'] {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 14px 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Coinbase One section: stack properly */
+  .home-page section:nth-child(4) .explore-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+
+  .home-page section:nth-child(4) .explore-grid > div:first-child {
+    order: 2;
+  }
+
+  .home-page section:nth-child(4) .explore-grid > div:last-child {
+    order: 1;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  /* Make Claim free trial button full-width */
+  .home-page section:nth-child(4) a[style*='display: inline-block'] {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 14px 24px !important;
+    box-sizing: border-box !important;
+    margin-top: 16px !important;
   }
 
   /* Explore dark panel: very compact on phones */
@@ -398,5 +464,25 @@ html {
   .home-page section {
     padding-left: 12px !important;
     padding-right: 12px !important;
+    padding-top: 28px !important;
+    padding-bottom: 28px !important;
+  }
+
+  /* Full-width buttons on ultra-small screens */
+  .home-page a[style*='display: inline-block'],
+  .home-page a[style*='display: block'] {
+    width: 100% !important;
+    padding: 12px 20px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  /* Reduce font sizes slightly */
+  .home-page h1 {
+    font-size: 1.75rem !important;
+  }
+
+  .home-page h2 {
+    font-size: 1.5rem !important;
   }
 }
