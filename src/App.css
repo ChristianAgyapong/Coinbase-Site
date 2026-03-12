@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 /* ─────────────────────────────────────────
    Keyframes
@@ -334,6 +334,15 @@ html {
     width: auto;
   }
 
+  /* Advanced Trader text col: center on tablet */
+  .adv-text-col {
+    text-align: center;
+  }
+  .adv-start-btn {
+    display: inline-block !important;
+    padding: 13px 28px !important;
+  }
+
   /* Coinbase One section sizing */
   .home-page section:nth-child(4) > div > div:last-child {
     max-width: 100% !important;
@@ -376,7 +385,7 @@ html {
   }
 
   /* Make Start Trading button full-width on mobile */
-  .home-page section:nth-child(3) a[style*='display: inline-block'] {
+  .adv-start-btn {
     display: block !important;
     width: 100% !important;
     text-align: center !important;

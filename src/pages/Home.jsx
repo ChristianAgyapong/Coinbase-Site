@@ -1,11 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { cryptoData } from '../data/cryptoData';
 import { useLivePrices } from '../context/LivePricesContext';
-import useReveal from '../hooks/useReveal';
-import CryptoCard from '../components/crypto/CryptoCard';
-import PriceChart from '../components/crypto/PriceChart';
 
-// useReveal is imported from src/hooks/useReveal.js
+function useReveal(options = {}) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { el.classList.add('is-visible'); obs.unobserve(el); }
+      },
+      { threshold: 0.12, ...options }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
 function Reveal({ children, variant = 'reveal-fade-up', delay = '', className = '', style = {} }) {
   const ref = useReveal();
   return (
@@ -30,11 +44,11 @@ const coinColors = {
 
 function PhoneMockup() {
   return (
-    <div style={{ position: 'relative', maxWidth: '390px', margin: '0 auto' }}>
+    <div style={{ position: 'relative', maxWidth: '390px', margin: '0 auto', paddingRight: '6%', paddingBottom: '5%' }}>
       <div style={{
         position: 'absolute',
-        top: '10%', left: '10%', right: '-6%', bottom: '-5%',
-        background: 'linear-gradient(145deg, #7C3AED, #5B21B6)',
+        top: '10%', left: '10%', right: '0%', bottom: '0%',
+        background: 'linear-gradient(145deg, #1652F0, #0A3ECF)',
         borderRadius: '28px',
         zIndex: 0,
       }} />
@@ -54,7 +68,7 @@ function PhoneMockup() {
             <span style={{ fontSize: '11px', color: '#9CA3AF' }}>Search</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '26px', height: '26px', background: '#7C3AED', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '26px', height: '26px', background: '#1652F0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ color: '#fff', fontWeight: '900', fontSize: '11px' }}>C</span>
             </div>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="5" width="4" height="16" rx="1"/></svg>
@@ -63,28 +77,28 @@ function PhoneMockup() {
         </div>
 
         <div style={{ padding: '16px 16px 4px' }}>
-          <p style={{ fontSize: '26px', fontWeight: '800', color: '#111827', letterSpacing: '-0.02em', margin: '0 0 4px' }}>$33,683.80</p>
-          <p style={{ fontSize: '12px', color: '#22C55E', fontWeight: '600', margin: 0 }}>&#8593; $131.36 (1.38%) 1D &#8250;</p>
+          <p style={{ fontSize: '26px', fontWeight: '800', color: '#111827', letterSpacing: '-0.02em', margin: '0 0 4px' }}>₵33,683.80</p>
+          <p style={{ fontSize: '12px', color: '#22C55E', fontWeight: '600', margin: 0 }}>&#8593; ₵131.36 (1.38%) 1D &#8250;</p>
         </div>
 
         <div style={{ padding: '6px 16px 2px' }}>
           <svg viewBox="0 0 260 68" width="100%" height="68" preserveAspectRatio="none">
             <defs>
               <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#7C3AED" stopOpacity="0.15"/>
-                <stop offset="100%" stopColor="#7C3AED" stopOpacity="0.01"/>
+                <stop offset="0%" stopColor="#1652F0" stopOpacity="0.15"/>
+                <stop offset="100%" stopColor="#1652F0" stopOpacity="0.01"/>
               </linearGradient>
             </defs>
             <path d="M0,60 C18,54 30,48 45,40 C60,32 70,36 85,28 C100,20 110,14 125,11 C140,8 150,16 165,10 C180,4 188,1.5 205,1.5 C222,1.5 230,6 240,4 C250,2 255,1.5 260,1 L260,68 L0,68 Z" fill="url(#cg1)"/>
-            <path d="M0,60 C18,54 30,48 45,40 C60,32 70,36 85,28 C100,20 110,14 125,11 C140,8 150,16 165,10 C180,4 188,1.5 205,1.5 C222,1.5 230,6 240,4 C250,2 255,1.5 260,1" fill="none" stroke="#7C3AED" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="260" cy="1" r="3.5" fill="#7C3AED"/>
-            <circle cx="260" cy="1" r="7.5" fill="#7C3AED" fillOpacity="0.18"/>
+            <path d="M0,60 C18,54 30,48 45,40 C60,32 70,36 85,28 C100,20 110,14 125,11 C140,8 150,16 165,10 C180,4 188,1.5 205,1.5 C222,1.5 230,6 240,4 C250,2 255,1.5 260,1" fill="none" stroke="#1652F0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="260" cy="1" r="3.5" fill="#1652F0"/>
+            <circle cx="260" cy="1" r="7.5" fill="#1652F0" fillOpacity="0.18"/>
           </svg>
         </div>
 
         <div style={{ display: 'flex', padding: '4px 14px 10px', gap: '0' }}>
           {['1H','1D','1W','1M','1Y','All'].map((t, i) => (
-            <span key={t} style={{ fontSize: '11px', fontWeight: '600', padding: '4px 7px', borderRadius: '6px', background: i === 1 ? '#7C3AED' : 'transparent', color: i === 1 ? '#fff' : '#9CA3AF', cursor: 'default' }}>{t}</span>
+            <span key={t} style={{ fontSize: '11px', fontWeight: '600', padding: '4px 7px', borderRadius: '6px', background: i === 1 ? '#1652F0' : 'transparent', color: i === 1 ? '#fff' : '#9CA3AF', cursor: 'default' }}>{t}</span>
           ))}
         </div>
 
@@ -92,11 +106,11 @@ function PhoneMockup() {
 
         <div style={{ padding: '0 16px' }}>
           {[
-            { ico: 'B', label: 'Crypto',      val: '$14,186.12', c: '#F59E0B', up: false },
-            { ico: 'S', label: 'Stocks',      val: '$8,133.98',  c: '#6366F1', up: false },
-            { ico: 'D', label: 'Derivatives', val: '$148.84',    c: '#8B5CF6', up: true  },
-            { ico: 'P', label: 'Predictions', val: '$42.69',     c: '#14B8A6', up: true  },
-            { ico: '$', label: 'Cash',         val: '$10,124.22', c: '#22C55E', up: false },
+            { ico: 'B', label: 'Crypto',      val: '₵224,140.70', c: '#F59E0B', up: false },
+            { ico: 'S', label: 'Stocks',      val: '₵128,516.88', c: '#6366F1', up: false },
+            { ico: 'D', label: 'Derivatives', val: '₵2,351.67',   c: '#8B5CF6', up: true  },
+            { ico: 'P', label: 'Predictions', val: '₵674.50',     c: '#14B8A6', up: true  },
+            { ico: '₵', label: 'Cash',         val: '₵159,962.68', c: '#22C55E', up: false },
           ].map(({ ico, label, val, c, up }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', paddingBottom: '10px' }}>
               <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: c + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px', flexShrink: 0 }}>
@@ -119,9 +133,9 @@ function PhoneMockup() {
 }
 
 function Home() {
-  const cryptoData = useLivePrices() ?? [];
   const [activeTab, setActiveTab] = useState('tradable');
-  const topCryptos = cryptoData.slice(0, 4);
+  const liveData = useLivePrices();
+  const topCryptos = (liveData ?? cryptoData).slice(0, 4);
 
   const exploreRef     = useReveal();
   const advancedRef    = useReveal();
@@ -130,12 +144,10 @@ function Home() {
   const featHdrRef     = useReveal();
   const ctaRef         = useReveal();
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency', currency: 'USD',
+  const formatPrice = (price) =>
+    '₵' + new Intl.NumberFormat('en-GH', {
       minimumFractionDigits: 2, maximumFractionDigits: 2,
     }).format(price);
-  };
 
   return (
     <div style={{ overflowX: 'hidden' }} className="home-page">
@@ -143,29 +155,22 @@ function Home() {
       {/* HERO */}
       <section style={{ background: '#ffffff', padding: '56px 0 80px' }}>
         <div style={{ maxWidth: '1160px', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '56px', alignItems: 'center' }} className="hero-grid">
-          <div className="hero-anim-left">
+          <div className="hero-anim-left home-hero-mockup">
             <PhoneMockup />
           </div>
           <div className="hero-anim-right">
             <h1 style={{ fontSize: 'clamp(2.25rem, 5vw, 3.75rem)', fontWeight: '800', color: '#111827', lineHeight: '1.1', letterSpacing: '-0.035em', marginBottom: '16px' }}>
-              Trade smarter.<br />Earn more.
+              The future of<br />finance is here..
             </h1>
-            <p style={{ fontSize: '1rem', color: '#7C3AED', fontWeight: '600', marginBottom: '32px', lineHeight: '1.6' }}>
-              The next-gen crypto exchange — fast, secure, and built for everyone.
+            <p style={{ fontSize: '1rem', color: '#D97706', fontWeight: '600', marginBottom: '32px', lineHeight: '1.6' }}>
+              Trade crypto and more on a platform you can trust.
             </p>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }} className="hero-cta-row">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                style={{ flex: 1, padding: '13px 16px', border: '1.5px solid #E5E7EB', borderRadius: '8px', fontSize: '0.9375rem', color: '#111827', outline: 'none', minWidth: 0 }}
-              />
-              <Link
-                to="/signup"
-                style={{ background: '#7C3AED', color: '#fff', fontWeight: '700', fontSize: '0.9375rem', padding: '13px 24px', borderRadius: '8px', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, display: 'inline-flex', alignItems: 'center' }}
-              >
-                Get started
-              </Link>
-            </div>
+            <Link
+              to="/signup"
+              style={{ display: 'inline-flex', alignItems: 'center', background: '#1652F0', color: '#fff', fontWeight: '700', fontSize: '1rem', padding: '14px 32px', borderRadius: '8px', textDecoration: 'none' }}
+            >
+              Get started
+            </Link>
           </div>
         </div>
       </section>
@@ -181,15 +186,15 @@ function Home() {
             <p style={{ fontSize: '1.0625rem', color: '#6B7280', lineHeight: '1.7', marginBottom: '32px' }}>
               Simply and securely buy, sell, and manage hundreds of cryptocurrencies.
             </p>
-            <Link to="/explore" style={{ display: 'inline-block', background: '#7C3AED', color: '#fff', fontWeight: '700', fontSize: '0.9375rem', padding: '13px 28px', borderRadius: '8px', textDecoration: 'none' }}>
+            <Link to="/explore" style={{ display: 'inline-block', background: '#1652F0', color: '#fff', fontWeight: '700', fontSize: '0.9375rem', padding: '13px 28px', borderRadius: '8px', textDecoration: 'none' }}>
               See more assets
             </Link>
           </div>
 
-          <div style={{ background: '#0A0B0D', borderRadius: '20px', padding: '20px', boxShadow: '0 20px 48px rgba(0,0,0,0.25)' }}>
-            <div style={{ display: 'flex', gap: '3px', marginBottom: '16px', background: '#1C1C1E', padding: '4px', borderRadius: '10px' }}>
-              {[['tradable','Tradable'],['gainers','Top gainers'],['new','New on NovaTrade']].map(([k, lbl]) => (
-                <button key={k} onClick={() => setActiveTab(k)} style={{ flex: 1, padding: '8px 4px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '600', background: activeTab === k ? '#ffffff' : 'transparent', color: activeTab === k ? '#111827' : '#6B7280', transition: 'all 0.15s' }}>
+          <div className="home-explore-panel" style={{ background: 'linear-gradient(145deg, #1652F0, #0A3ECF)', borderRadius: '20px', padding: '20px', boxShadow: '0 20px 48px rgba(22,82,240,0.35)' }}>
+            <div className="home-explore-tabs" style={{ display: 'flex', gap: '3px', marginBottom: '16px', background: 'rgba(255,255,255,0.12)', padding: '4px', borderRadius: '10px' }}>
+              {[['tradable','Tradable'],['gainers','Top Gainers'],['new','New']].map(([k, lbl]) => (
+                <button key={k} onClick={() => setActiveTab(k)} style={{ flex: 1, padding: '8px 4px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '600', background: activeTab === k ? '#ffffff' : 'transparent', color: activeTab === k ? '#1652F0' : 'rgba(255,255,255,0.65)', transition: 'all 0.15s', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {lbl}
                 </button>
               ))}
@@ -201,26 +206,26 @@ function Home() {
                 return (
                   <Link key={crypto.id} to={'/asset/' + crypto.id}
                     style={{ display: 'flex', alignItems: 'center', padding: '10px 8px', borderRadius: '10px', textDecoration: 'none', background: 'transparent', transition: 'background 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#1C1C1E'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.10)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginRight: '10px' }}>
                       <span style={{ color: '#fff', fontWeight: '800', fontSize: '11px' }}>{crypto.symbol.slice(0,2).toUpperCase()}</span>
                     </div>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: '13px', fontWeight: '600', color: '#F3F4F6', margin: 0 }}>{crypto.name}</p>
-                      <p style={{ fontSize: '11px', color: '#6B7280', margin: 0 }}>{crypto.symbol}</p>
+                      <p style={{ fontSize: '13px', fontWeight: '600', color: '#ffffff', margin: 0 }}>{crypto.name}</p>
+                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', margin: 0 }}>{crypto.symbol}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '13px', fontWeight: '700', color: '#F3F4F6', margin: 0, fontVariantNumeric: 'tabular-nums' }}>{formatPrice(crypto.price)}</p>
-                      <p style={{ fontSize: '11px', fontWeight: '600', color: isUp ? '#22C55E' : '#EF4444', margin: 0 }}>{isUp ? '\u2191' : '\u2193'} {Math.abs(crypto.change24h).toFixed(2)}%</p>
+                      <p style={{ fontSize: '13px', fontWeight: '700', color: '#ffffff', margin: 0, fontVariantNumeric: 'tabular-nums' }}>{formatPrice(crypto.price)}</p>
+                      <p style={{ fontSize: '11px', fontWeight: '600', color: isUp ? '#4ADE80' : '#F87171', margin: 0 }}>{isUp ? '\u2191' : '\u2193'} {Math.abs(crypto.change24h).toFixed(2)}%</p>
                     </div>
                   </Link>
                 );
               })}
             </div>
-            <div style={{ textAlign: 'center', marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #1C1C1E' }}>
-              <Link to="/explore" style={{ fontSize: '13px', fontWeight: '600', color: '#3B82F6', textDecoration: 'none' }}>View all assets &#8594;</Link>
+            <div style={{ textAlign: 'center', marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+              <Link to="/explore" style={{ fontSize: '13px', fontWeight: '600', color: '#ffffff', textDecoration: 'none', opacity: 0.85 }}>View all assets &#8594;</Link>
             </div>
           </div>
         </div>
@@ -230,13 +235,13 @@ function Home() {
       <section style={{ padding: '88px 0', background: '#ffffff', borderTop: '1px solid #F3F4F6' }}>
         <div ref={advancedRef} style={{ maxWidth: '1160px', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '56px', alignItems: 'center' }} className="hero-grid reveal reveal-left">
           {/* Trading chart mockup */}
-          <div style={{ background: '#0A0B0D', borderRadius: '20px', padding: '0', overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.22)', minHeight: '300px', position: 'relative' }}>
+          <div style={{ background: 'linear-gradient(145deg, #1652F0, #0A3ECF)', borderRadius: '20px', padding: '0', overflow: 'hidden', boxShadow: '0 24px 60px rgba(22,82,240,0.35)', minHeight: '300px', position: 'relative' }}>
             <div style={{ padding: '14px 16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ color: '#fff', fontSize: '9px', fontWeight: '900' }}>BT</span>
                 </div>
-                <span style={{ color: '#E5E7EB', fontSize: '12px', fontWeight: '700' }}>BTC-USD</span>
+                <span style={{ color: '#E5E7EB', fontSize: '12px', fontWeight: '700' }}>BTC-GHS</span>
                 <span style={{ color: '#22C55E', fontSize: '11px', fontWeight: '600' }}>+2.4%</span>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -244,8 +249,8 @@ function Home() {
               </div>
             </div>
             <div style={{ padding: '8px 16px 0' }}>
-              <p style={{ color: '#fff', fontSize: '20px', fontWeight: '800', margin: '0', letterSpacing: '-0.02em' }}>$43,218.50</p>
-              <p style={{ color: '#22C55E', fontSize: '11px', margin: '0 0 6px', fontWeight: '600' }}>▲ $1,032.10 (+2.45%)</p>
+              <p style={{ color: '#fff', fontSize: '20px', fontWeight: '800', margin: '0', letterSpacing: '-0.02em' }}>₵43,218.50</p>
+              <p style={{ color: '#22C55E', fontSize: '11px', margin: '0 0 6px', fontWeight: '600' }}>▲ ₵1,032.10 (+2.45%)</p>
             </div>
             <svg viewBox="0 0 380 130" width="100%" height="130" preserveAspectRatio="none" style={{ display: 'block' }}>
               <defs>
@@ -303,7 +308,7 @@ function Home() {
               Powerful tools, designed<br />for the advanced trader.
             </h2>
             <p style={{ fontSize: '1rem', color: '#D97706', fontWeight: '600', marginBottom: '12px', lineHeight: '1.6' }}>
-              Powerful analytical tools with the safety and security of NovaTrade deliver the ultimate trading experience.
+              Powerful analytical tools with the safety and security of Coinbase deliver the ultimate trading experience.
             </p>
             <p style={{ fontSize: '0.9375rem', color: '#6B7280', lineHeight: '1.7', marginBottom: '32px' }}>
               Tap into sophisticated charting capabilities, real-time order books, and deep liquidity across hundreds of markets.
@@ -315,16 +320,16 @@ function Home() {
         </div>
       </section>
 
-      {/* NOVATRADE PRO — ZERO FEES */}
+      {/* COINBASE ONE — ZERO FEES */}
       <section style={{ padding: '88px 0', background: '#ffffff' }}>
         <div ref={coinbaseOneRef} style={{ maxWidth: '1160px', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '56px', alignItems: 'center' }} className="explore-grid reveal reveal-right">
           {/* Text */}
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', border: '1.5px solid #E5E7EB', borderRadius: '99px', padding: '5px 12px', marginBottom: '20px' }}>
-              <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: '#1652F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ color: '#fff', fontSize: '7px', fontWeight: '900' }}>C</span>
               </div>
-              <span style={{ fontSize: '11px', fontWeight: '700', color: '#374151', letterSpacing: '0.05em', textTransform: 'uppercase' }}>NOVATRADE PRO</span>
+              <span style={{ fontSize: '11px', fontWeight: '700', color: '#374151', letterSpacing: '0.05em', textTransform: 'uppercase' }}>COINBASE ONE</span>
             </div>
             <h2 style={{ fontSize: 'clamp(2rem, 4.5vw, 3.25rem)', fontWeight: '800', color: '#111827', lineHeight: '1.1', letterSpacing: '-0.035em', marginBottom: '16px' }}>
               Zero trading fees,<br />more rewards.
@@ -348,7 +353,7 @@ function Home() {
             </div>
             <div style={{ textAlign: 'center', padding: '24px 0 28px' }}>
               <div style={{ position: 'relative', width: '72px', height: '72px', margin: '0 auto 16px' }}>
-                <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #5B21B6)' }}/>
+                <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'linear-gradient(135deg, #1652F0, #0A3ECF)' }}/>
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
                 </div>
@@ -360,11 +365,11 @@ function Home() {
               <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>You got 0.010423 BTC</p>
             </div>
             <div style={{ background: '#ffffff', borderRadius: '12px', padding: '12px 14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#1652F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span style={{ color: '#fff', fontSize: '9px', fontWeight: '900' }}>C</span>
               </div>
               <div>
-                <p style={{ fontSize: '11px', fontWeight: '700', color: '#111827', margin: 0 }}>$44.68 — No trading fees with NovaTrade Pro</p>
+                <p style={{ fontSize: '11px', fontWeight: '700', color: '#111827', margin: 0 }}>₵706.14 — No trading fees with Coinbase One</p>
               </div>
             </div>
             <div style={{ background: '#ffffff', borderRadius: '12px', padding: '12px 14px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
@@ -373,8 +378,8 @@ function Home() {
               </div>
               <div>
                 <p style={{ fontSize: '11px', fontWeight: '700', color: '#111827', margin: '0 0 2px' }}>Exclusive member benefits</p>
-                <p style={{ fontSize: '10px', color: '#6B7280', margin: '0 0 4px', lineHeight: '1.4' }}>NovaTrade Pro members get boosted staking rewards.</p>
-                <a href="#" style={{ fontSize: '10px', color: '#7C3AED', fontWeight: '600', textDecoration: 'none' }}>Learn more</a>
+                <p style={{ fontSize: '10px', color: '#6B7280', margin: '0 0 4px', lineHeight: '1.4' }}>Coinbase One members get boosted staking rewards.</p>
+                <a href="#" style={{ fontSize: '10px', color: '#1652F0', fontWeight: '600', textDecoration: 'none' }}>Learn more</a>
               </div>
             </div>
           </div>
@@ -406,20 +411,20 @@ function Home() {
                 illustration: (
                   <svg viewBox="0 0 260 140" width="100%" height="140">
                     <rect width="260" height="140" fill="#0A0B0D"/>
-                    <circle cx="130" cy="70" r="50" fill="none" stroke="#7C3AED" strokeWidth="1.5" strokeDasharray="6 3" opacity="0.6"/>
+                    <circle cx="130" cy="70" r="50" fill="none" stroke="#1652F0" strokeWidth="1.5" strokeDasharray="6 3" opacity="0.6"/>
                     <circle cx="130" cy="70" r="35" fill="none" stroke="#3B82F6" strokeWidth="1" strokeDasharray="4 4" opacity="0.5"/>
-                    <circle cx="130" cy="70" r="22" fill="#7C3AED" opacity="0.9"/>
-                    <text x="130" y="77" textAnchor="middle" fill="#fff" fontSize="22" fontWeight="900">$</text>
+                    <circle cx="130" cy="70" r="22" fill="#1652F0" opacity="0.9"/>
+                    <text x="130" y="77" textAnchor="middle" fill="#fff" fontSize="22" fontWeight="900">₵</text>
                     {[[70,30,'#EF4444'],[180,35,'#F59E0B'],[195,95,'#22C55E'],[70,110,'#8B5CF6'],[155,115,'#3B82F6']].map(([cx,cy,c],i)=>(
                       <circle key={i} cx={cx} cy={cy} r="7" fill={c} opacity="0.9"/>
                     ))}
-                    <line x1="130" y1="48" x2="130" y2="30" stroke="#7C3AED" strokeWidth="1.5" opacity="0.4"/>
-                    <line x1="130" y1="48" x2="180" y2="35" stroke="#7C3AED" strokeWidth="1" opacity="0.3" strokeDasharray="3 2"/>
-                    <line x1="130" y1="48" x2="70" y2="30" stroke="#7C3AED" strokeWidth="1" opacity="0.3" strokeDasharray="3 2"/>
+                    <line x1="130" y1="48" x2="130" y2="30" stroke="#1652F0" strokeWidth="1.5" opacity="0.4"/>
+                    <line x1="130" y1="48" x2="180" y2="35" stroke="#1652F0" strokeWidth="1" opacity="0.3" strokeDasharray="3 2"/>
+                    <line x1="130" y1="48" x2="70" y2="30" stroke="#1652F0" strokeWidth="1" opacity="0.3" strokeDasharray="3 2"/>
                   </svg>
                 ),
                 title: 'USDC: The digital dollar for the global crypto economy',
-                desc: 'NovaTrade believes crypto will be part of the solution for creating an open financial system that is both more efficient and more...',
+                desc: 'Coinbase believes crypto will be part of the solution for creating an open financial system that is both more efficient and more...',
               },
               {
                 bg: '#3B82F6',
@@ -430,12 +435,12 @@ function Home() {
                     <rect x="90" y="38" width="80" height="8" rx="3" fill="#E5E7EB"/>
                     <rect x="90" y="52" width="60" height="6" rx="2" fill="#F3F4F6"/>
                     <rect x="90" y="64" width="70" height="6" rx="2" fill="#F3F4F6"/>
-                    <rect x="95" y="78" width="30" height="12" rx="6" fill="#7C3AED"/>
+                    <rect x="95" y="78" width="30" height="12" rx="6" fill="#1652F0"/>
                     <text x="110" y="88" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="700">PAY</text>
                     <circle cx="100" cy="115" r="9" fill="#F59E0B" opacity="0.9"/>
-                    <text x="100" y="119" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="900">$</text>
+                    <text x="100" y="119" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="900">₵</text>
                     <circle cx="160" cy="115" r="9" fill="#F59E0B" opacity="0.9"/>
-                    <text x="160" y="119" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="900">$</text>
+                    <text x="160" y="119" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="900">₵</text>
                     {[[68,28],[190,28],[68,112],[190,112]].map(([cx,cy],i)=>(
                       <g key={i}><line x1={cx} y1={cy} x2="130" y2="70" stroke="#fff" strokeWidth="0.8" opacity="0.3"/></g>
                     ))}
@@ -498,14 +503,14 @@ function Home() {
               Create your cryptocurrency<br />portfolio today
             </h2>
             <p style={{ fontSize: '1.0625rem', color: '#6B7280', maxWidth: '460px', margin: '0 auto', lineHeight: '1.65' }}>
-              NovaTrade has a variety of features that make it the best place to start trading
+              Coinbase has a variety of features that make it the best place to start trading
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '48px' }}>
             {[
-              { bg: '#F5F3FF', icon: '#2563EB', label: 'Manage your portfolio', desc: 'Buy and sell popular digital currencies, keep track of them in one place.', svg: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
+              { bg: '#EFF6FF', icon: '#2563EB', label: 'Manage your portfolio', desc: 'Buy and sell popular digital currencies, keep track of them in one place.', svg: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
               { bg: '#F5F3FF', icon: '#7C3AED', label: 'Recurring buys', desc: 'Invest in cryptocurrency slowly over time by scheduling buys daily, weekly, or monthly.', svg: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
-              { bg: '#F0FDF4', icon: '#16A34A', label: 'Mobile apps', desc: 'Stay on top of the markets with the NovaTrade app for Android or iOS.', svg: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z' },
+              { bg: '#F0FDF4', icon: '#16A34A', label: 'Mobile apps', desc: 'Stay on top of the markets with the Coinbase app for Android or iOS.', svg: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z' },
             ].map(({ bg, icon, label, desc, svg }, idx) => (
               <Reveal key={label} variant="reveal-fade-up" delay={`reveal-delay-${idx + 1}`}>
               <div style={{ textAlign: 'center' }}>
@@ -524,7 +529,7 @@ function Home() {
       {/* STATS */}
       <section style={{ background: '#F9FAFB', borderTop: '1px solid #F3F4F6', borderBottom: '1px solid #F3F4F6', padding: '56px 24px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '32px', textAlign: 'center' }}>
-          {[{ value: '$100B+', label: 'Total assets traded' }, { value: '100+', label: 'Countries supported' }, { value: '50M+', label: 'Verified users' }].map(({ value, label }, idx) => (
+          {[{ value: '₵100B+', label: 'Total assets traded' }, { value: '100+', label: 'Countries supported' }, { value: '50M+', label: 'Verified users' }].map(({ value, label }, idx) => (
             <Reveal key={label} variant="reveal-fade-up" delay={`reveal-delay-${idx + 1}`}>
             <div>
               <p style={{ fontSize: 'clamp(2rem, 3.5vw, 2.5rem)', fontWeight: '800', color: '#111827', margin: '0 0 6px', letterSpacing: '-0.02em' }}>{value}</p>
@@ -537,15 +542,15 @@ function Home() {
 
       {/* LEARN & EARN CTA */}
       <section style={{ padding: '80px 24px', background: '#ffffff' }}>
-        <div ref={ctaRef} style={{ maxWidth: '820px', margin: '0 auto', background: '#7C3AED', borderRadius: '20px', padding: 'clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px)', textAlign: 'center' }} className="reveal reveal-scale">
+        <div ref={ctaRef} style={{ maxWidth: '820px', margin: '0 auto', background: '#1652F0', borderRadius: '20px', padding: 'clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px)', textAlign: 'center' }} className="reveal reveal-scale">
           <p style={{ fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase', margin: '0 0 14px' }}>LEARN &amp; EARN</p>
           <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: '800', color: '#ffffff', lineHeight: '1.25', margin: '0 0 14px', letterSpacing: '-0.02em' }}>
-            Earn up to $100 in rewards
+            Earn up to ₵1,580 in rewards
           </h2>
           <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.65', maxWidth: '460px', margin: '0 auto 32px' }}>
             Discover how specific cryptocurrencies work and get a bit of each crypto to try out for yourself.
           </p>
-          <Link to="/learn" style={{ display: 'inline-block', background: '#ffffff', color: '#7C3AED', fontWeight: '700', fontSize: '0.9375rem', padding: '13px 32px', borderRadius: '8px', textDecoration: 'none' }}>
+          <Link to="/learn" style={{ display: 'inline-block', background: '#ffffff', color: '#1652F0', fontWeight: '700', fontSize: '0.9375rem', padding: '13px 32px', borderRadius: '8px', textDecoration: 'none' }}>
             Start earning
           </Link>
         </div>
