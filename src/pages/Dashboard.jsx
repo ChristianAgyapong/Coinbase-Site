@@ -1,25 +1,8 @@
 ﻿import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { cryptoData as staticCryptoData } from '../data/cryptoData';
 import { useAuth } from '../context/AuthContext';
-import { useLivePrices } from '../context/LivePricesContext';
+import { useTransactions } from '../context/TransactionsContext';
 
 // ── Static portfolio data ─────────────────────────────────────
-const PORTFOLIO_ASSETS = [
-  { name: 'Crypto',       initial: '₿', color: '#D97706', bg: '#FEF3C7', value: 224140.70, change: null   },
-  { name: 'Stocks',       initial: 'S', color: '#2563EB', bg: '#DBEAFE', value: 128516.88, change: null   },
-  { name: 'Derivatives',  initial: 'D', color: '#7C3AED', bg: '#EDE9FE', value: 2351.67,   change: 2351.67 },
-  { name: 'Predictions',  initial: 'P', color: '#059669', bg: '#D1FAE5', value: 674.50,    change: 674.50  },
-  { name: 'Cash',         initial: '₵', color: '#0891B2', bg: '#CFFAFE', value: 159962.68, change: null   },
-];
-
-const RECENT_TXS = [
-  { type: 'Buy',  coin: 'Bitcoin',  symbol: 'BTC', amount: '0.0124 BTC', value: 13292.22,  date: 'Today, 9:42 AM' },
-  { type: 'Sell', coin: 'Ethereum', symbol: 'ETH', amount: '0.5 ETH',    value: 27983.22,  date: 'Yesterday'      },
-  { type: 'Buy',  coin: 'Solana',   symbol: 'SOL', amount: '4.2 SOL',    value: 11840.99,  date: 'Mar 5'          },
-  { type: 'Buy',  coin: 'Cardano',  symbol: 'ADA', amount: '1,200 ADA',  value: 12892.80,  date: 'Mar 3'          },
-];
-
 const PERIODS = ['1H', '1D', '1W', '1M', '1Y', 'All'];
 
 // Smooth upward chart path (viewBox 0 0 600 160)
@@ -54,20 +37,104 @@ function Reveal({ children, className = 'reveal-fade-up', delay = 0, style = {} 
 // ── Dashboard ─────────────────────────────────────────────────
 export default function Dashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const liveData = useLivePrices() ?? staticCryptoData;
+  const {
+    transactions,
+    addTransaction,
+    deleteTransaction,
+    savingsGoals,
+    addSavingsGoal,
+    contributeToGoal,
+    paymentRequests,
+    addPaymentRequest,
+    collectPayment,
+    balance,
+    totalIncome,
+    totalExpenses,
+  } = useTransactions();
+  
   const [activePeriod, setActivePeriod] = useState('1D');
-  const [activeTab, setActiveTab] = useState('buy');
-  const [selectedCoin, setSelectedCoin] = useState('bitcoin');
-  const [buyAmount, setBuyAmount] = useState('');
+  
+  // Transaction Form State
+  const [txDescription, setTxDescription] = useState('');
+  const [txAmount, setTxAmount] = useState('');
+  const [txType, setTxType] = useState('expense');
 
-  const selectedCoinData = liveData.find(c => c.id === selectedCoin);
-  const estimatedReceive = buyAmount && selectedCoinData
-    ? (parseFloat(buyAmount) / selectedCoinData.price).toFixed(6)
-    : null;
+  // Savings state
+  const [goalName, setGoalName] = useState('');
+  const [goalTarget, setGoalTarget] = useState('');
+  const [goalContribution, setGoalContribution] = useState('');
+  const [selectedGoalId, setSelectedGoalId] = useState('');
+
+  // Payment collection state
+  const [requestTitle, setRequestTitle] = useState('');
+  const [requestPurpose, setRequestPurpose] = useState('');
+  const [requestTarget, setRequestTarget] = useState('');
+  const [selectedRequestId, setSelectedRequestId] = useState('');
+  const [collectionAmount, setCollectionAmount] = useState('');
 
   const displayName = user?.email?.split('@')[0] ?? 'there';
   const todayStr = new Intl.DateTimeFormat('en-GH', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
+
+  const handleAddTransaction = (e) => {
+    e.preventDefault();
+    if (!txDescription || !txAmount) return;
+    addTransaction({
+      description: txDescription,
+      amount: parseFloat(txAmount),
+      type: txType,
+    });
+    setTxDescription('');
+    setTxAmount('');
+  };
+
+  const handleAddSavingsGoal = (e) => {
+    e.preventDefault();
+    if (!goalName || !goalTarget) return;
+    addSavingsGoal({ name: goalName, target: parseFloat(goalTarget) });
+    setGoalName('');
+    setGoalTarget('');
+  };
+
+  const handleContributeToGoal = (e) => {
+    e.preventDefault();
+    if (!selectedGoalId || !goalContribution) return;
+
+    const contribution = parseFloat(goalContribution);
+    contributeToGoal({ goalId: Number(selectedGoalId), amount: contribution });
+    addTransaction({
+      description: 'Savings contribution',
+      amount: contribution,
+      type: 'expense',
+    });
+    setGoalContribution('');
+  };
+
+  const handleAddPaymentRequest = (e) => {
+    e.preventDefault();
+    if (!requestTitle || !requestTarget) return;
+    addPaymentRequest({
+      title: requestTitle,
+      purpose: requestPurpose,
+      target: parseFloat(requestTarget),
+    });
+    setRequestTitle('');
+    setRequestPurpose('');
+    setRequestTarget('');
+  };
+
+  const handleCollectPayment = (e) => {
+    e.preventDefault();
+    if (!selectedRequestId || !collectionAmount) return;
+
+    const amount = parseFloat(collectionAmount);
+    collectPayment({ requestId: Number(selectedRequestId), amount });
+    addTransaction({
+      description: 'Payment collected',
+      amount,
+      type: 'income',
+    });
+    setCollectionAmount('');
+  };
 
   return (
     <div style={{ background: '#F3F4F6', minHeight: 'calc(100vh - 65px)' }}>
@@ -80,12 +147,12 @@ export default function Dashboard() {
               Good morning, <span style={{ color: '#1652F0' }}>{displayName}</span> 👋
             </h1>
             <p style={{ color: '#6B7280', fontSize: '0.875rem', margin: '3px 0 0', fontWeight: '500' }}>
-              {todayStr} · Your portfolio at a glance
+              {todayStr} · Your financial overview
             </p>
           </div>
-          <Link to="/explore" style={{ padding: '7px 16px', background: '#F3F4F6', color: '#6B7280', borderRadius: '8px', fontWeight: '600', fontSize: '0.8125rem', textDecoration: 'none', border: '1px solid #E5E7EB' }}>
-            Explore Markets
-          </Link>
+          <button style={{ padding: '7px 16px', background: '#F3F4F6', color: '#6B7280', borderRadius: '8px', fontWeight: '600', fontSize: '0.8125rem', border: '1px solid #E5E7EB', cursor: 'pointer' }}>
+            Settings
+          </button>
         </div>
       </div>
 
@@ -97,14 +164,18 @@ export default function Dashboard() {
         {/* ────────── LEFT COLUMN ────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-          {/* Portfolio card */}
+          {/* Balance card */}
           <Reveal delay={0}>
             <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #E5E7EB', overflow: 'hidden' }}>
               <div style={{ padding: '26px 28px 0' }}>
-                <p style={{ color: '#9CA3AF', fontSize: '0.75rem', fontWeight: '700', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Portfolio Value</p>
+                <p style={{ color: '#9CA3AF', fontSize: '0.75rem', fontWeight: '700', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Net Balance</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 'clamp(1.75rem,4vw,2.25rem)', fontWeight: '800', color: '#111827', letterSpacing: '-0.03em' }}>₵532,203.64</span>
-                  <span style={{ color: '#22C55E', fontWeight: '700', fontSize: '0.9375rem' }}>▲ ₵2,075.49 (1.38%) today</span>
+                  <span style={{ fontSize: 'clamp(1.75rem,4vw,2.25rem)', fontWeight: '800', color: '#111827', letterSpacing: '-0.03em' }}>
+                    ₵{balance.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                  <span style={{ color: balance >= 0 ? '#22C55E' : '#EF4444', fontWeight: '700', fontSize: '0.9375rem' }}>
+                    {balance >= 0 ? 'Positve Balance' : 'Overdraft Warning'}
+                  </span>
                 </div>
                 {/* Period selector */}
                 <div style={{ display: 'flex', gap: '3px', marginTop: '20px', marginBottom: '4px' }}>
@@ -134,84 +205,64 @@ export default function Dashboard() {
                 </svg>
               </div>
 
-              {/* Asset breakdown */}
-              <div style={{ padding: '4px 28px 22px', borderTop: '1px solid #F3F4F6' }}>
-                {PORTFOLIO_ASSETS.map((a) => (
-                  <div key={a.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 0', borderBottom: '1px solid #F9FAFB' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: a.bg, color: a.color, fontWeight: '800', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        {a.initial}
-                      </div>
-                      <span style={{ fontWeight: '600', color: '#374151', fontSize: '0.9375rem' }}>{a.name}</span>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.9375rem', fontVariantNumeric: 'tabular-nums' }}>
-                        ₵{a.value.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </p>
-                      {a.change !== null && (
-                        <p style={{ margin: '2px 0 0', color: '#22C55E', fontWeight: '700', fontSize: '0.75rem' }}>
-                          ↑ ₵{a.change.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </p>
-                      )}
-                    </div>
+              {/* Income vs Expenses Summary */}
+              <div style={{ padding: '4px 28px 22px', borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
+                  <div style={{ flex: 1, paddingTop: '16px' }}>
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: '#6B7280', fontWeight: '600' }}>Total Income</p>
+                      <p style={{ margin: '4px 0 0', fontSize: '1.1rem', color: '#22C55E', fontWeight: '800' }}>+₵{totalIncome.toLocaleString()}</p>
                   </div>
-                ))}
-                <p style={{ fontSize: '0.75rem', color: '#9CA3AF', margin: '12px 0 0', lineHeight: '1.55' }}>
-                  Stocks and prediction markets not available in your jurisdiction.
-                </p>
+                  <div style={{ width: '1px', background: '#F3F4F6' }}></div>
+                  <div style={{ flex: 1, paddingTop: '16px', textAlign: 'right' }}>
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: '#6B7280', fontWeight: '600' }}>Total Expenses</p>
+                      <p style={{ margin: '4px 0 0', fontSize: '1.1rem', color: '#EF4444', fontWeight: '800' }}>-₵{totalExpenses.toLocaleString()}</p>
+                  </div>
               </div>
             </div>
           </Reveal>
 
-          {/* Crypto watchlist table */}
+          {/* Transactions List */}
           <Reveal delay={80}>
             <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #E5E7EB', padding: '24px 28px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-                <h2 style={{ fontSize: '1.0625rem', fontWeight: '800', color: '#111827', margin: 0 }}>Watchlist</h2>
-                <Link to="/explore" style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1652F0', textDecoration: 'none' }}>View all →</Link>
+                <h2 style={{ fontSize: '1.0625rem', fontWeight: '800', color: '#111827', margin: 0 }}>Recent Transactions</h2>
+                <span style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1652F0', cursor: 'pointer' }}>View all →</span>
               </div>
               <div className="table-scroll-wrap">
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    {['Asset', 'Price', '24h', 'Market Cap'].map(h => (
-                      <th key={h} style={{ textAlign: h === 'Asset' ? 'left' : 'right', padding: '8px 10px', fontSize: '0.7rem', fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.07em', borderBottom: '1px solid #F3F4F6' }}>
-                        {h}
-                      </th>
-                    ))}
+                    <th style={{ textAlign: 'left', padding: '8px 10px', fontSize: '0.7rem', fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.07em', borderBottom: '1px solid #F3F4F6' }}>Description</th>
+                    <th style={{ textAlign: 'left', padding: '8px 10px', fontSize: '0.7rem', fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.07em', borderBottom: '1px solid #F3F4F6' }}>Date</th>
+                    <th style={{ textAlign: 'right', padding: '8px 10px', fontSize: '0.7rem', fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.07em', borderBottom: '1px solid #F3F4F6' }}>Amount</th>
+                    <th style={{ textAlign: 'right', padding: '8px 10px', fontSize: '0.7rem', fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.07em', borderBottom: '1px solid #F3F4F6' }}>XX</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {liveData.map((coin, i) => (
+                  {transactions.map((t) => (
                     <tr
-                      key={coin.id}
-                      onClick={() => navigate(`/asset/${coin.id}`)}
-                      style={{ cursor: 'pointer', transition: 'background 0.1s' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#F9FAFB'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                      key={t.id}
+                      style={{ transition: 'background 0.1s' }}
                     >
                       <td style={{ padding: '12px 10px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `hsl(${i * 36},68%,92%)`, color: `hsl(${i * 36},55%,42%)`, fontWeight: '800', fontSize: '0.6875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            {coin.symbol.slice(0, 3)}
-                          </div>
-                          <div>
-                            <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.875rem' }}>{coin.name}</p>
-                            <p style={{ margin: 0, color: '#9CA3AF', fontSize: '0.75rem' }}>{coin.symbol}</p>
-                          </div>
-                        </div>
+                        <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.875rem' }}>{t.description}</p>
+                        <p style={{ margin: 0, color: '#9CA3AF', fontSize: '0.75rem' }}><span style={{ textTransform: 'capitalize' }}>{t.type}</span></p>
                       </td>
-                      <td style={{ textAlign: 'right', padding: '12px 10px', fontWeight: '700', color: '#111827', fontSize: '0.875rem', fontVariantNumeric: 'tabular-nums' }}>
-                        ₵{coin.price.toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      <td style={{ padding: '12px 10px', color: '#6B7280', fontSize: '0.8125rem' }}>
+                        {new Date(t.date).toLocaleDateString()}
                       </td>
-                      <td style={{ textAlign: 'right', padding: '12px 10px', fontWeight: '700', fontSize: '0.875rem', color: coin.change24h >= 0 ? '#22C55E' : '#EF4444' }}>
-                        {coin.change24h >= 0 ? '▲' : '▼'} {Math.abs(coin.change24h).toFixed(2)}%
+                      <td style={{ textAlign: 'right', padding: '12px 10px', fontWeight: '700', fontSize: '0.875rem', color: t.type === 'income' ? '#22C55E' : '#111827' }}>
+                        {t.type === 'income' ? '+' : '-'} ₵{Number(t.amount).toLocaleString('en-GH', { minimumFractionDigits: 2 })}
                       </td>
-                      <td style={{ textAlign: 'right', padding: '12px 10px', color: '#6B7280', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
-                        ₵{(coin.marketCap / 1e9).toFixed(1)}B
+                      <td style={{ textAlign: 'right', padding: '12px 10px' }}>
+                         <button onClick={() => deleteTransaction(t.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontWeight: 'bold' }}>×</button>
                       </td>
                     </tr>
                   ))}
+                  {transactions.length === 0 && (
+                      <tr>
+                          <td colSpan="4" style={{ textAlign: 'center', padding: '20px', color: '#9CA3AF' }}>No transactions yet. Add one!</td>
+                      </tr>
+                  )}
                 </tbody>
               </table>
               </div>
@@ -222,128 +273,238 @@ export default function Dashboard() {
         {/* ────────── RIGHT COLUMN ────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-          {/* Quick Trade */}
+          {/* Add Transaction Form */}
           <Reveal delay={120}>
             <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #E5E7EB', padding: '24px' }}>
-              <h2 style={{ fontSize: '1.0625rem', fontWeight: '800', color: '#111827', margin: '0 0 18px' }}>Quick Trade</h2>
+              <h2 style={{ fontSize: '1.0625rem', fontWeight: '800', color: '#111827', margin: '0 0 18px' }}>Add Transaction</h2>
 
-              {/* Buy / Sell toggle */}
-              <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: '12px', padding: '4px', marginBottom: '18px' }}>
-                {['buy', 'sell'].map(tab => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    style={{ flex: 1, padding: '8px', borderRadius: '9px', border: 'none', cursor: 'pointer', fontWeight: '700', fontSize: '0.875rem', background: activeTab === tab ? '#fff' : 'transparent', color: activeTab === tab ? '#111827' : '#6B7280', boxShadow: activeTab === tab ? '0 1px 4px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.15s', textTransform: 'capitalize' }}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </div>
+              <form onSubmit={handleAddTransaction}>
+                {/* Type toggle */}
+                <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: '12px', padding: '4px', marginBottom: '18px' }}>
+                    {['income', 'expense'].map(type => (
+                    <button
+                        key={type}
+                        type="button"
+                        onClick={() => setTxType(type)}
+                        style={{ flex: 1, padding: '8px', borderRadius: '9px', border: 'none', cursor: 'pointer', fontWeight: '700', fontSize: '0.875rem', background: txType === type ? '#fff' : 'transparent', color: txType === type ? (type === 'income' ? '#22C55E' : '#EF4444') : '#6B7280', boxShadow: txType === type ? '0 1px 4px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.15s', textTransform: 'capitalize' }}
+                    >
+                        {type}
+                    </button>
+                    ))}
+                </div>
 
-              {/* Coin selector */}
-              <label style={{ display: 'block', color: '#374151', fontWeight: '600', fontSize: '0.8125rem', marginBottom: '6px' }}>Asset</label>
-              <select
-                value={selectedCoin}
-                onChange={e => setSelectedCoin(e.target.value)}
-                style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #E5E7EB', fontSize: '0.9375rem', fontWeight: '600', color: '#111827', marginBottom: '14px', background: '#fff', cursor: 'pointer', outline: 'none', boxSizing: 'border-box' }}
-                onFocus={e => { e.target.style.borderColor = '#1652F0'; }}
-                onBlur={e => { e.target.style.borderColor = '#E5E7EB'; }}
-              >
-                {liveData.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} ({c.symbol})</option>
-                ))}
-              </select>
+                {/* Description */}
+                <label style={{ display: 'block', color: '#374151', fontWeight: '600', fontSize: '0.8125rem', marginBottom: '6px' }}>Description</label>
+                <input
+                    type="text"
+                    placeholder="Salary, Rent, etc."
+                    value={txDescription}
+                    onChange={e => setTxDescription(e.target.value)}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #E5E7EB', fontSize: '0.9375rem', fontWeight: '600', color: '#111827', marginBottom: '14px', background: '#fff', outline: 'none', boxSizing: 'border-box' }}
+                    onFocus={e => { e.target.style.borderColor = '#1652F0'; }}
+                    onBlur={e => { e.target.style.borderColor = '#E5E7EB'; }}
+                />
 
-              {/* Amount */}
-              <label style={{ display: 'block', color: '#374151', fontWeight: '600', fontSize: '0.8125rem', marginBottom: '6px' }}>Amount (GHS)</label>
-              <div style={{ position: 'relative', marginBottom: '14px' }}>
-                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', fontWeight: '700', fontSize: '1rem', pointerEvents: 'none' }}>₵</span>
+                {/* Amount */}
+                <label style={{ display: 'block', color: '#374151', fontWeight: '600', fontSize: '0.8125rem', marginBottom: '6px' }}>Amount (GHS)</label>
+                <div style={{ position: 'relative', marginBottom: '20px' }}>
+                    <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', fontWeight: '700', fontSize: '1rem', pointerEvents: 'none' }}>₵</span>
+                    <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={txAmount}
+                    onChange={e => setTxAmount(e.target.value)}
+                    style={{ width: '100%', padding: '11px 14px 11px 28px', borderRadius: '10px', border: '1.5px solid #E5E7EB', fontSize: '0.9375rem', color: '#111827', outline: 'none', boxSizing: 'border-box', fontWeight: '600', background: '#fff' }}
+                    onFocus={e => { e.target.style.borderColor = '#1652F0'; }}
+                    onBlur={e => { e.target.style.borderColor = '#E5E7EB'; }}
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    style={{ width: '100%', padding: '13px', background: '#1652F0', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', transition: 'opacity 0.15s', letterSpacing: '0.01em' }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                >
+                    Add Transaction
+                </button>
+              </form>
+            </div>
+          </Reveal>
+
+          {/* Savings goals */}
+          <Reveal delay={150}>
+            <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #E5E7EB', padding: '24px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: '0 0 14px' }}>Savings Goals</h3>
+
+              <form onSubmit={handleAddSavingsGoal} style={{ display: 'grid', gridTemplateColumns: '1fr 120px', gap: '8px', marginBottom: '14px' }}>
+                <input
+                  type="text"
+                  placeholder="Goal name"
+                  value={goalName}
+                  onChange={e => setGoalName(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', fontWeight: '600', color: '#111827', outline: 'none' }}
+                />
                 <input
                   type="number"
                   min="0"
-                  placeholder="0.00"
-                  value={buyAmount}
-                  onChange={e => setBuyAmount(e.target.value)}
-                  style={{ width: '100%', padding: '11px 14px 11px 28px', borderRadius: '10px', border: '1.5px solid #E5E7EB', fontSize: '0.9375rem', color: '#111827', outline: 'none', boxSizing: 'border-box', fontWeight: '600', background: '#fff' }}
-                  onFocus={e => { e.target.style.borderColor = '#1652F0'; }}
-                  onBlur={e => { e.target.style.borderColor = '#E5E7EB'; }}
+                  step="0.01"
+                  placeholder="Target"
+                  value={goalTarget}
+                  onChange={e => setGoalTarget(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', fontWeight: '600', color: '#111827', outline: 'none' }}
                 />
-              </div>
-
-              {/* Estimated receive */}
-              {estimatedReceive && (
-                <div style={{ background: '#EFF4FF', borderRadius: '10px', padding: '10px 14px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.8125rem', color: '#6B7280', fontWeight: '600' }}>You receive ≈</span>
-                  <span style={{ fontSize: '0.9375rem', fontWeight: '800', color: '#1652F0' }}>{estimatedReceive} {selectedCoinData?.symbol}</span>
-                </div>
-              )}
-
-              <button
-                style={{ width: '100%', padding: '13px', background: activeTab === 'buy' ? '#1652F0' : '#EF4444', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', transition: 'opacity 0.15s', letterSpacing: '0.01em' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-              >
-                {activeTab === 'buy' ? `Buy ${selectedCoinData?.symbol ?? ''}` : `Sell ${selectedCoinData?.symbol ?? ''}`}
-              </button>
-
-              {selectedCoinData && (
-                <p style={{ textAlign: 'center', fontSize: '0.8125rem', color: '#9CA3AF', margin: '10px 0 0', fontWeight: '600' }}>
-                  1 {selectedCoinData.symbol} = ₵{selectedCoinData.price.toLocaleString('en-GH', { minimumFractionDigits: 2 })}
-                </p>
-              )}
-            </div>
-          </Reveal>
-
-          {/* Recent Activity */}
-          <Reveal delay={160}>
-            <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #E5E7EB', padding: '24px' }}>
-              <h2 style={{ fontSize: '1.0625rem', fontWeight: '800', color: '#111827', margin: '0 0 16px' }}>Recent Activity</h2>
-              {RECENT_TXS.map((tx, i) => (
-                <div
-                  key={i}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: i < RECENT_TXS.length - 1 ? '1px solid #F3F4F6' : 'none' }}
+                <button
+                  type="submit"
+                  style={{ gridColumn: '1 / -1', width: '100%', padding: '10px', background: '#EEF2FF', color: '#1652F0', border: '1px solid #C7D2FE', borderRadius: '9px', fontWeight: '700', fontSize: '0.8125rem', cursor: 'pointer' }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: tx.type === 'Buy' ? '#DCFCE7' : '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '16px' }}>
-                      {tx.type === 'Buy' ? '↓' : '↑'}
+                  Create goal
+                </button>
+              </form>
+
+              <form onSubmit={handleContributeToGoal} style={{ display: 'grid', gridTemplateColumns: '1fr 110px', gap: '8px', marginBottom: '14px' }}>
+                <select
+                  value={selectedGoalId}
+                  onChange={e => setSelectedGoalId(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', color: '#111827', background: '#fff', outline: 'none' }}
+                >
+                  <option value="">Select goal</option>
+                  {savingsGoals.map(goal => (
+                    <option key={goal.id} value={goal.id}>{goal.name}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Amount"
+                  value={goalContribution}
+                  onChange={e => setGoalContribution(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', fontWeight: '600', color: '#111827', outline: 'none' }}
+                />
+                <button
+                  type="submit"
+                  style={{ gridColumn: '1 / -1', width: '100%', padding: '10px', background: '#1652F0', color: '#fff', border: 'none', borderRadius: '9px', fontWeight: '700', fontSize: '0.8125rem', cursor: 'pointer' }}
+                >
+                  Contribute to savings
+                </button>
+              </form>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {savingsGoals.slice(0, 3).map(goal => {
+                  const progress = goal.target > 0 ? Math.min(100, (Number(goal.saved) / Number(goal.target)) * 100) : 0;
+                  return (
+                    <div key={goal.id} style={{ border: '1px solid #F3F4F6', borderRadius: '10px', padding: '10px 12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
+                        <span style={{ color: '#111827', fontWeight: '700', fontSize: '0.8125rem' }}>{goal.name}</span>
+                        <span style={{ color: '#6B7280', fontSize: '0.75rem' }}>{Math.round(progress)}%</span>
+                      </div>
+                      <div style={{ width: '100%', height: '7px', background: '#F3F4F6', borderRadius: '999px', overflow: 'hidden', marginBottom: '4px' }}>
+                        <div style={{ width: `${progress}%`, height: '100%', background: '#1652F0' }} />
+                      </div>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: '#6B7280' }}>
+                        ₵{Number(goal.saved).toLocaleString('en-GH', { minimumFractionDigits: 2 })} / ₵{Number(goal.target).toLocaleString('en-GH', { minimumFractionDigits: 2 })}
+                      </p>
                     </div>
-                    <div>
-                      <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.875rem' }}>{tx.type} {tx.coin}</p>
-                      <p style={{ margin: 0, color: '#9CA3AF', fontSize: '0.75rem' }}>{tx.date}</p>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.875rem' }}>
-                      ₵{tx.value.toLocaleString('en-GH', { minimumFractionDigits: 2 })}
-                    </p>
-                    <p style={{ margin: 0, color: '#9CA3AF', fontSize: '0.75rem' }}>{tx.amount}</p>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
+              </div>
             </div>
           </Reveal>
 
-          {/* Verify identity banner */}
-          <Reveal className="reveal-scale" delay={200}>
-            <div style={{ background: 'linear-gradient(135deg,#1652F0 0%,#0A38B8 100%)', borderRadius: '20px', padding: '24px', color: '#fff' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>🔒</div>
-                <p style={{ margin: 0, fontWeight: '800', fontSize: '1rem' }}>Verify your identity</p>
+          {/* Payment collection */}
+          <Reveal delay={180}>
+            <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #E5E7EB', padding: '24px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: '0 0 14px' }}>Payment Collection</h3>
+
+              <form onSubmit={handleAddPaymentRequest} style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+                <input
+                  type="text"
+                  placeholder="Request title"
+                  value={requestTitle}
+                  onChange={e => setRequestTitle(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', fontWeight: '600', color: '#111827', outline: 'none' }}
+                />
+                <input
+                  type="text"
+                  placeholder="Purpose (optional)"
+                  value={requestPurpose}
+                  onChange={e => setRequestPurpose(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', color: '#111827', outline: 'none' }}
+                />
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Target amount"
+                  value={requestTarget}
+                  onChange={e => setRequestTarget(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', fontWeight: '600', color: '#111827', outline: 'none' }}
+                />
+                <button
+                  type="submit"
+                  style={{ width: '100%', padding: '10px', background: '#EEF2FF', color: '#1652F0', border: '1px solid #C7D2FE', borderRadius: '9px', fontWeight: '700', fontSize: '0.8125rem', cursor: 'pointer' }}
+                >
+                  Create collection
+                </button>
+              </form>
+
+              <form onSubmit={handleCollectPayment} style={{ display: 'grid', gridTemplateColumns: '1fr 110px', gap: '8px', marginBottom: '12px' }}>
+                <select
+                  value={selectedRequestId}
+                  onChange={e => setSelectedRequestId(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', color: '#111827', background: '#fff', outline: 'none' }}
+                >
+                  <option value="">Select request</option>
+                  {paymentRequests.map(request => (
+                    <option key={request.id} value={request.id}>{request.title}</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Amount"
+                  value={collectionAmount}
+                  onChange={e => setCollectionAmount(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '9px', border: '1.5px solid #E5E7EB', fontSize: '0.8125rem', fontWeight: '600', color: '#111827', outline: 'none' }}
+                />
+                <button
+                  type="submit"
+                  style={{ gridColumn: '1 / -1', width: '100%', padding: '10px', background: '#16A34A', color: '#fff', border: 'none', borderRadius: '9px', fontWeight: '700', fontSize: '0.8125rem', cursor: 'pointer' }}
+                >
+                  Record payment
+                </button>
+              </form>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {paymentRequests.slice(0, 3).map(request => {
+                  const progress = request.target > 0 ? Math.min(100, (Number(request.collected) / Number(request.target)) * 100) : 0;
+                  return (
+                    <div key={request.id} style={{ border: '1px solid #F3F4F6', borderRadius: '10px', padding: '10px 12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
+                        <span style={{ color: '#111827', fontWeight: '700', fontSize: '0.8125rem' }}>{request.title}</span>
+                        <span style={{ color: '#16A34A', fontWeight: '700', fontSize: '0.75rem' }}>{Math.round(progress)}%</span>
+                      </div>
+                      {request.purpose && <p style={{ margin: '0 0 6px', color: '#6B7280', fontSize: '0.75rem' }}>{request.purpose}</p>}
+                      <div style={{ width: '100%', height: '7px', background: '#F3F4F6', borderRadius: '999px', overflow: 'hidden', marginBottom: '4px' }}>
+                        <div style={{ width: `${progress}%`, height: '100%', background: '#16A34A' }} />
+                      </div>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: '#6B7280' }}>
+                        ₵{Number(request.collected).toLocaleString('en-GH', { minimumFractionDigits: 2 })} / ₵{Number(request.target).toLocaleString('en-GH', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
-              <p style={{ margin: '0 0 18px', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.78)', lineHeight: '1.6' }}>
-                Complete identity verification to unlock higher limits and all platform features.
-              </p>
-              <button
-                style={{ background: '#fff', color: '#1652F0', border: 'none', borderRadius: '99px', padding: '9px 20px', fontWeight: '800', fontSize: '0.875rem', cursor: 'pointer', transition: 'opacity 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-              >
-                Verify now →
-              </button>
             </div>
           </Reveal>
+
         </div>
       </div>
     </div>
   );
 }
+

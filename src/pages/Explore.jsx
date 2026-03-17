@@ -135,7 +135,7 @@ function Explore() {
   return (
     <div style={{ minHeight: '100vh', background: '#fff' }}>
 
-      {/* ══════════ TOP PANEL ══════════ */}
+      {/* TOP PANEL */}
       <div style={{ borderBottom: '1px solid #E5E7EB' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px 0', display: 'grid', gridTemplateColumns: '1fr 296px', gap: '28px', alignItems: 'start' }} className="explore-hero-grid">
 

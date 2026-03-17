@@ -89,20 +89,20 @@ function WorldMap() {
 }
 // ── Dropdown data ─────────────────────────────────────────────
 const DROPDOWNS = {
-  cryptocurrencies: {
+    cryptocurrencies: { // Now "Assets"
     cols: [
       {
         items: [
-          { icon: <IcoPrice />, label: 'Prices', desc: 'All crypto prices & charts', to: '/explore' },
-          { icon: <IcoDollar />, label: 'Bitcoin (BTC)', desc: 'The original cryptocurrency', to: '/asset/bitcoin' },
-          { icon: <IcoTrend />, label: 'Ethereum (ETH)', desc: 'Smart contracts & DeFi', to: '/asset/ethereum' },
+          { icon: <IcoPrice />, label: 'Market Overview', desc: 'Real-time financial markets', to: '/explore' },
+          { icon: <IcoDollar />, label: 'Currencies', desc: 'Global foreign exchange', to: '/explore' },
+          { icon: <IcoTrend />, label: 'Stocks & ETFs', desc: 'Equity markets', to: '/explore' },
         ],
       },
       {
         items: [
-          { icon: <IcoTrend />, label: 'Solana (SOL)', desc: 'High-speed blockchain', to: '/asset/solana' },
-          { icon: <IcoGlobe />, label: 'XRP', desc: 'Global payments network', to: '/asset/xrp' },
-          { icon: <IcoDollar />, label: 'USDC', desc: 'Dollar-backed stablecoin', to: '/asset/usd-coin' },
+          { icon: <IcoGlobe />, label: 'Commodities', desc: 'Gold, silver, and oil', to: '/explore' },
+          { icon: <IcoShield />, label: 'Bonds', desc: 'Government and corporate bonds', to: '/explore' },
+          { icon: <IcoPercent />, label: 'Crypto Assets', desc: 'Digital currency markets', to: '/explore' },
         ],
       },
     ],
@@ -115,28 +115,28 @@ const DROPDOWNS = {
           </svg>
         </div>
       ),
-      title: 'Start trading crypto',
-      body: 'Over 200 assets available on Coinbase.',
-      cta: 'View all assets',
+      title: 'Diverse Portfolio',
+      body: 'Access thousands of global assets from one dashboard.',
+      cta: 'Explore markets',
       to: '/explore',
     },
   },
-  individuals: {
+  individuals: { // Now "Personal"
     cols: [
       {
         items: [
-          { icon: <IcoDollar />, label: 'Buy and sell', desc: 'Buy, sell and use crypto', to: '/explore' },
-          { icon: <IcoPhone />, label: 'Base App', desc: 'Post, earn, trade and chat', to: '/explore' },
-          { icon: <IcoStar />, label: 'Coinbase One', desc: 'Zero trading fees and more', to: '/signup' },
-          { icon: <IcoUser />, label: 'Private Client', desc: 'Personalised crypto services', to: '/signup' },
+          { icon: <IcoDollar />, label: 'Checking', desc: 'Everyday banking', to: '/explore' },
+          { icon: <IcoPhone />, label: 'Savings', desc: 'High-yield savings accounts', to: '/explore' },
+          { icon: <IcoStar />, label: 'Investments', desc: 'Automated portfolio management', to: '/signup' },
+          { icon: <IcoUser />, label: 'Retirement', desc: 'IRA and 401(k) rollovers', to: '/signup' },
         ],
       },
       {
         items: [
-          { icon: <IcoTrend />, label: 'Advanced', desc: 'Professional-grade trading tools', to: '/explore' },
-          { icon: <IcoDollar />, label: 'Earn', desc: 'Stake crypto and earn rewards', to: '/explore' },
-          { icon: <IcoStar />, label: 'Coinbase Wealth', desc: 'Institutional-grade services', to: '/signup' },
-          { icon: <IcoCard />, label: 'Credit Card', desc: 'Earn crypto on every purchase', to: '/signup' },
+          { icon: <IcoTrend />, label: 'Trading', desc: 'Active trading platform', to: '/explore' },
+          { icon: <IcoCard />, label: 'Credit Cards', desc: 'Rewards and cash back', to: '/signup' },
+          { icon: <IcoShield />, label: 'Loans', desc: 'Personal and home loans', to: '/explore' },
+          { icon: <IcoSwap />, label: 'Transfers', desc: 'Global money movement', to: '/explore' },
         ],
       },
     ],
@@ -149,26 +149,26 @@ const DROPDOWNS = {
           </svg>
         </div>
       ),
-      title: 'Built for everyone',
-      body: 'Access the most trusted crypto platform in the world.',
-      cta: 'Get started',
+      title: 'Financial Freedom',
+      body: 'Banking, investing, and planning built for you.',
+      cta: 'Open account',
       to: '/signup',
     },
   },
-  businesses: {
+  businesses: { // Now "Business"
     cols: [
       {
-        header: { label: 'Payments', hasLink: false },
+        header: { label: 'Banking', hasLink: false },
         items: [
-          { icon: <IcoBrief />, label: 'Commerce', desc: 'Accept crypto payments anywhere', to: '/explore' },
-          { icon: <IcoDollar />, label: 'Billing', desc: 'Automated crypto invoicing', to: '/explore' },
+          { icon: <IcoBrief />, label: 'Business Checking', desc: 'Manage cash flow', to: '/explore' },
+          { icon: <IcoDollar />, label: 'Payroll', desc: 'Automated team payments', to: '/explore' },
         ],
       },
       {
-        header: { label: 'Trading', hasLink: false },
+        header: { label: 'Growth', hasLink: false },
         items: [
-          { icon: <IcoTrend />, label: 'Prime', desc: 'Institutional-grade trading', to: '/explore' },
-          { icon: <IcoShield />, label: 'Asset Hub', desc: 'Issue and manage digital assets', to: '/explore' },
+          { icon: <IcoTrend />, label: 'Capital', desc: 'Business financing & loans', to: '/explore' },
+          { icon: <IcoShield />, label: 'Treasury', desc: 'Yield on idle cash', to: '/explore' },
         ],
       },
     ],
@@ -181,8 +181,8 @@ const DROPDOWNS = {
           </svg>
         </div>
       ),
-      title: 'Grow with crypto',
-      body: 'Powerful tools for companies of every size.',
+      title: 'Scale your business',
+      body: 'Integrated financial tools for modern companies.',
       cta: 'Get started',
       to: '/signup',
     },
@@ -190,12 +190,12 @@ const DROPDOWNS = {
   institutions: {
     cols: [
       {
-        header: { label: 'Prime', hasLink: true, to: '/explore' },
+        header: { label: 'Solutions', hasLink: true, to: '/explore' },
         items: [
-          { icon: <IcoClock />,   label: 'Trading and Financing', desc: 'Professional prime brokerage services', to: '/explore' },
-          { icon: <IcoShield />,  label: 'Custody',               desc: 'Securely store all your digital assets', to: '/explore' },
-          { icon: <IcoPercent />, label: 'Staking',               desc: 'Explore staking across our products',   to: '/explore' },
-          { icon: <IcoGrid />,    label: 'Onchain Wallet',        desc: 'Institutional-grade wallet to get onchain', to: '/explore' },
+          { icon: <IcoClock />,   label: 'Asset Management', desc: 'Portfolio construction', to: '/explore' },
+          { icon: <IcoShield />,  label: 'Custody',               desc: 'Institutional grade security', to: '/explore' },
+          { icon: <IcoPercent />, label: 'Liquidity',               desc: 'Deep market access',   to: '/explore' },
+          { icon: <IcoGrid />,    label: 'Advisory',        desc: 'Strategic financial guidance', to: '/explore' },
         ],
       },
       {
@@ -394,9 +394,9 @@ function Navbar() {
   };
 
   const NAV_ITEMS = [
-    { key: 'cryptocurrencies', label: 'Cryptocurrencies', path: '/explore', direct: true },
-    { key: 'individuals',      label: 'Individuals' },
-    { key: 'businesses',       label: 'Businesses' },
+    { key: 'cryptocurrencies', label: 'Assets', path: '/explore', direct: true },
+    { key: 'individuals',      label: 'Personal' },
+    { key: 'businesses',       label: 'Business' },
     { key: 'institutions',     label: 'Institutions' },
     { key: 'developers',       label: 'Developers' },
     { key: 'company',          label: 'Company' },

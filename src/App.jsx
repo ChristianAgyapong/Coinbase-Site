@@ -11,6 +11,7 @@ import AdvancedTrading from './pages/AdvancedTrading';
 import Dashboard from './pages/Dashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LivePricesProvider } from './context/LivePricesContext';
+import { TransactionsProvider } from './context/TransactionsContext';
 
 const AUTH_ROUTES = ['/signin', '/signup'];
 
@@ -18,6 +19,7 @@ function PrivateRoute({ children }) {
   const { user } = useAuth();
   return user ? children : <Navigate to="/signin" replace />;
 }
+
 
 function AppLayout() {
   const location = useLocation();
@@ -47,9 +49,11 @@ function App() {
   return (
     <AuthProvider>
       <LivePricesProvider>
-        <Router>
-          <AppLayout />
-        </Router>
+        <TransactionsProvider>
+          <Router>
+            <AppLayout />
+          </Router>
+        </TransactionsProvider>
       </LivePricesProvider>
     </AuthProvider>
   );
