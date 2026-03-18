@@ -107,7 +107,7 @@ function SignIn() {
                 <circle cx="19" cy="17" r="3" stroke="#fff" strokeWidth="1.5" />
                 <line x1="21.5" y1="19.5" x2="23" y2="21" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
-              Sign in with Passkeys
+              Sign in with Passkey
             </button>
 
             {/* Google */}
