@@ -80,7 +80,7 @@ function SignIn() {
               onMouseEnter={e => { e.currentTarget.style.background = '#2A4A75'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#2C5282'; }}
             >
-              Continue here
+              Continue 
             </button>
           </form>
 
